@@ -1,5 +1,5 @@
-from arguments.argument import Argument
-from typecheckers import boolean_checker, numeric_checker
+from argument import Argument
+from validator import validate
 
 
 class Parser:
@@ -13,22 +13,10 @@ class Parser:
         parsed_input = input
         
         for argument in self.registered_arguments:
-            result = []
-            #if argument.atype == str:
-            #    parsed_input = string.check(parsed_input)
-            if argument.atype == bool:
-                result = boolean_checker.check(parsed_input)
-            elif argument.atype == int:
-                result = numeric_checker.check(parsed_input, int)
-            elif argument.atype == float:
-                result = numeric_checker.check(parsed_input, float)
+            result = validate(parsed_input, argument.atype)
 
-            print(result)
             output[argument.name] = result[0]
             parsed_input = result[1]
 
         print(output)
         return output
-
-    def x(self):
-        pass
