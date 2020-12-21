@@ -15,6 +15,9 @@ if __name__ == '__main__':
     parser.add_arg(Argument('g', atype=Union[int, float]))
     parser.add_arg(Argument('h', atype=Union[int, float]))
     parser.add_arg(Argument('i', atype=Union[float, int]))
-    parser.add_arg(Argument('i', atype=Union[float, int]))
+    parser.add_arg(Argument('j', atype=Union[float, int]))
+    parser.add_arg(Argument('k', atype=Union[Union[int, float], int]))
+    parser.add_arg(Argument('l', atype=complex))
+    parser.add_arg(Argument('m', atype=complex))
 
-    parser.parse('true False 101011 1000.1 10001,1 12 12.3 12,34 13.1 14')
+    parser.parse('true False 101011 1000.1 10001,1 12 12.3 12,34 13.1 14 15 5+3j 18')

@@ -8,6 +8,8 @@ def validate(input: str, atype: type) -> list:
         result = validate_numeric(input, int)
     elif atype == float:
         result = validate_numeric(input, float)
+    elif atype == complex:
+        result = validate_numeric(input, complex)
     elif get_origin(atype) == Union:
         result = validate_union(input, atype)
     else:
@@ -27,17 +29,19 @@ def validate_boolean(input: str) -> list:
         raise ValueError(f'Error parsing "{input}" since "{input_split[0]}" could not be parsed to a boolean.')
 
 
-def validate_numeric(input: str, atype: Union[int, float]) -> list:
+def validate_numeric(input: str, atype: Union[int, float, complex]) -> list:
     input_split = input.split(' ', 1)
 
     try:
-        parsed_input: Union[int, float] = 0
+        parsed_input: Union[int, float, complex] = 0
 
         if atype == int:
             parsed_input = int(input_split[0])
         elif atype == float:
             input_split[0] = input_split[0].replace(',', '.')  # Make sure the formatting is correct
             parsed_input = float(input_split[0])
+        elif atype == complex:
+            parsed_input = complex(input_split[0])
 
         return [parsed_input, input_split[1] if len(input_split) > 1 else '']
     except ValueError:
