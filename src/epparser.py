@@ -8,6 +8,9 @@ class Parser:
     def add_arg(self, argument: Argument):
         self.registered_arguments.append(argument)
 
+    def clear_args(self):
+        self.registered_arguments = []
+
     def parse(self, input: str) -> dict:
         output: dict = {}
         parsed_input = input
@@ -18,5 +21,4 @@ class Parser:
             output[argument.name] = result[0]
             parsed_input = result[1]
 
-        print(output)
         return output
