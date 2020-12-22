@@ -1,28 +1,29 @@
-from typing import Union, get_args, get_origin, List
+from typing import Union, get_args, get_origin
 
 
-class StringValidateFinished(Exception): pass
+class StringValidateFinished(Exception):
+    pass
 
 
 def validate(input: str, atype: type) -> list:
+    atype_original = atype
+    atype = get_origin(atype) if get_origin(atype) else atype
+
     # Boolean
     if atype == bool:
         result = validate_boolean(input)
     # Numerics: Integer, float and complex
     elif atype == int or atype == float or atype == complex:
-        result = validate_numeric(input, atype)
+        result = validate_numeric(input, atype_original)
     # String
     elif atype == str:
         result = validate_string(input)
     # Union
-    elif get_origin(atype) == Union:
-        result = validate_union(input, atype)
-    # List
-    elif atype == list:
-        result = validate_list(input)
-    # List of type
-    elif get_origin(atype) == list:
-        result = validate_list(input, atype)
+    elif atype == Union:
+        result = validate_union(input, atype_original)
+    # List, set, tuple or dictionary
+    elif atype == list or atype == set or atype == tuple or atype == dict:
+        result = validate_collection(input, atype_original)
     else:
         result = ['', input]
 
@@ -105,19 +106,32 @@ def validate_union(input: str, atype: Union) -> list:
     return ['', input]
 
 
-def validate_list(input: str, atype=List[str]) -> list:
+def validate_collection(input: str, atype: Union[list, set, tuple, dict]) -> list:
     unparsed_input = input
     parsed_input = []
-    sub_type = get_args(atype)[0]
 
+    # Parse everything to string first
     while len(unparsed_input) > 0:
         parsed = validate_string(unparsed_input)
         parsed_input.append(parsed[0])
         unparsed_input = parsed[1] if len(parsed) > 1 else ''
 
-    # Check if the sub type is not string, this is the default, no need to parse twice
-    if sub_type != str:
-        for index in range(len(parsed_input)):
-            parsed_input[index] = validate(parsed_input[index], sub_type)[0]
+    # Parse all the subtypes
+    sub_types = get_args(atype) if get_args(atype) else [str]
+
+    for index in range(len(parsed_input)):
+        sub_type_index = index % len(sub_types)
+
+        # Check if the sub type is not string, this is the default, no need to parse twice
+        if sub_types[sub_type_index] != str:
+            parsed_input[index] = validate(parsed_input[index], sub_types[sub_type_index])[0]
+
+    # Transform the list into whatever type was provided
+    if atype == set or get_origin(atype) == set:
+        parsed_input = set(parsed_input)
+    elif atype == tuple or get_origin(atype) == tuple:
+        parsed_input = tuple(parsed_input)
+    elif atype == dict or get_origin(atype) == dict:
+        parsed_input = {parsed_input[i]: parsed_input[i+1] for i in range(0, len(parsed_input), 2)}
 
     return [parsed_input, unparsed_input[1] if unparsed_input else '']

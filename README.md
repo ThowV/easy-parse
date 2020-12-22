@@ -1,11 +1,9 @@
-# Types implementation progress (6/14)
+# Types implementation progress (9/12)
 
 |Data type|Sub type|
 |---|---|
 |text|~~str~~|
 |Numeric|~~int~~, ~~float~~, ~~complex~~|
-|Sequence|~~list~~, tuple, range|
-|Mapping|dict|
-|Set types|set, frozenset|
+|Collection|~~list~~, ~~set~~, ~~tuple~~, ~~dict~~|
 |Boolean|~~bool~~|
 |Binary|bytes, bytearray, memoryview|

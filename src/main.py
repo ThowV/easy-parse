@@ -1,6 +1,6 @@
 import pprint
 
-from typing import Union, List
+from typing import Union, List, Tuple
 from argument import Argument
 from epparser import Parser
 
@@ -66,5 +66,23 @@ if __name__ == '__main__':
     # Lists with type union as arg
     parser.add_arg(Argument('a', atype=List[Union[int, float]]))
     pprint.pprint(parser.parse('1 2.2 3,3'))
+    print('-------------------------------')
+    parser.clear_args()
+
+    # Sets
+    parser.add_arg(Argument('a', atype=set))
+    pprint.pprint(parser.parse('"this is " a test "  trust" me'))
+    print('-------------------------------')
+    parser.clear_args()
+
+    # Tuples
+    parser.add_arg(Argument('a', atype=Tuple[str, int, float, bool]))
+    pprint.pprint(parser.parse('string1 2 3.3 true string4 5 6.6 true'))
+    print('-------------------------------')
+    parser.clear_args()
+
+    # Dictionaries
+    parser.add_arg(Argument('a', atype=dict[str, int]))
+    pprint.pprint(parser.parse('key1 2 key3 4 key5 6'))
     print('-------------------------------')
     parser.clear_args()
