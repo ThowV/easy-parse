@@ -1,6 +1,6 @@
 import pprint
 
-from typing import Union
+from typing import Union, List
 from argument import Argument
 from epparser import Parser
 
@@ -48,5 +48,23 @@ if __name__ == '__main__':
     parser.add_arg(Argument('c', atype=str))
     parser.add_arg(Argument('d', atype=str))
     pprint.pprint(parser.parse('"this is " a test "  trust"'))
+    print('-------------------------------')
+    parser.clear_args()
+
+    # Lists
+    parser.add_arg(Argument('a', atype=list))
+    pprint.pprint(parser.parse('"this is " a test "  trust" me'))
+    print('-------------------------------')
+    parser.clear_args()
+
+    # Lists with type args
+    parser.add_arg(Argument('a', atype=List[int]))
+    pprint.pprint(parser.parse('1 2 3'))
+    print('-------------------------------')
+    parser.clear_args()
+
+    # Lists with type union as arg
+    parser.add_arg(Argument('a', atype=List[Union[int, float]]))
+    pprint.pprint(parser.parse('1 2.2 3,3'))
     print('-------------------------------')
     parser.clear_args()

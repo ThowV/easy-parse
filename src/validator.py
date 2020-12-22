@@ -1,18 +1,28 @@
-from typing import Union, get_args, get_origin
+from typing import Union, get_args, get_origin, List
 
 
 class StringValidateFinished(Exception): pass
 
 
 def validate(input: str, atype: type) -> list:
+    # Boolean
     if atype == bool:
         result = validate_boolean(input)
+    # Numerics: Integer, float and complex
     elif atype == int or atype == float or atype == complex:
         result = validate_numeric(input, atype)
+    # String
     elif atype == str:
         result = validate_string(input)
+    # Union
     elif get_origin(atype) == Union:
         result = validate_union(input, atype)
+    # List
+    elif atype == list:
+        result = validate_list(input)
+    # List of type
+    elif get_origin(atype) == list:
+        result = validate_list(input, atype)
     else:
         result = ['', input]
 
@@ -93,3 +103,21 @@ def validate_union(input: str, atype: Union) -> list:
             continue
 
     return ['', input]
+
+
+def validate_list(input: str, atype=List[str]) -> list:
+    unparsed_input = input
+    parsed_input = []
+    sub_type = get_args(atype)[0]
+
+    while len(unparsed_input) > 0:
+        parsed = validate_string(unparsed_input)
+        parsed_input.append(parsed[0])
+        unparsed_input = parsed[1] if len(parsed) > 1 else ''
+
+    # Check if the sub type is not string, this is the default, no need to parse twice
+    if sub_type != str:
+        for index in range(len(parsed_input)):
+            parsed_input[index] = validate(parsed_input[index], sub_type)[0]
+
+    return [parsed_input, unparsed_input[1] if unparsed_input else '']
