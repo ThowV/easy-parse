@@ -7,82 +7,79 @@ from epparser import Parser
 if __name__ == '__main__':
     parser = Parser()
 
-    # Booleans
+    print('\n------------Booleans------------')
     parser.add_arg(Argument('a', atype=bool))
     parser.add_arg(Argument('b', atype=bool))
     pprint.pprint(parser.parse('true false'))
-    print('-------------------------------')
     parser.clear_args()
 
-    # Numerics
+    print('\n------------Numerics------------')
     parser.add_arg(Argument('a', atype=int))
     parser.add_arg(Argument('b', atype=float))
     parser.add_arg(Argument('c', atype=float))
     parser.add_arg(Argument('d', atype=complex))
     pprint.pprint(parser.parse('1 2.2 3,3 4+4j'))
-    print('-------------------------------')
     parser.clear_args()
 
-    # Unions
+    print('\n------------Unions------------')
     parser.add_arg(Argument('a', atype=Union[int, float]))
     parser.add_arg(Argument('b', atype=Union[int, float]))
     parser.add_arg(Argument('c', atype=Union[float, int]))
     parser.add_arg(Argument('d', atype=Union[float, int]))
     parser.add_arg(Argument('e', atype=Union[Union[int, float], int]))
     pprint.pprint(parser.parse('1 2.2 3,3 4 5.5'))
-    print('-------------------------------')
     parser.clear_args()
 
-    # Strings
+    print('\n------------Strings: Quotation mark------------')
     parser.add_arg(Argument('a', atype=str))
     parser.add_arg(Argument('b', atype=str))
     parser.add_arg(Argument('c', atype=str))
     parser.add_arg(Argument('d', atype=str))
     pprint.pprint(parser.parse('this is "a test" "trust me"'))
-    print('-------------------------------')
     parser.clear_args()
 
-    # Intricate strings
+    print('------------Strings: Apostrophe------------')
+    parser.add_arg(Argument('a', atype=str))
+    parser.add_arg(Argument('b', atype=str))
+    parser.add_arg(Argument('c', atype=str))
+    parser.add_arg(Argument('d', atype=str))
+    pprint.pprint(parser.parse("this is 'a test' 'trust me'"))
+    parser.clear_args()
+
+    print('------------Strings: Intricate------------')
     parser.add_arg(Argument('a', atype=str))
     parser.add_arg(Argument('b', atype=str))
     parser.add_arg(Argument('c', atype=str))
     parser.add_arg(Argument('d', atype=str))
     pprint.pprint(parser.parse('"this is " a test "  trust"'))
-    print('-------------------------------')
     parser.clear_args()
 
-    # Lists
+    print('\n------------Lists------------')
     parser.add_arg(Argument('a', atype=list))
     pprint.pprint(parser.parse('"this is " a test "  trust" me'))
-    print('-------------------------------')
     parser.clear_args()
 
-    # Lists with type args
+    print('------------Lists: Sub types------------')
     parser.add_arg(Argument('a', atype=List[int]))
     pprint.pprint(parser.parse('1 2 3'))
-    print('-------------------------------')
     parser.clear_args()
 
-    # Lists with type union as arg
+    print('------------Lists: Union as sub type------------')
     parser.add_arg(Argument('a', atype=List[Union[int, float]]))
     pprint.pprint(parser.parse('1 2.2 3,3'))
-    print('-------------------------------')
     parser.clear_args()
 
-    # Sets
+    print('\n------------Sets------------')
     parser.add_arg(Argument('a', atype=set))
     pprint.pprint(parser.parse('"this is " a test "  trust" me'))
-    print('-------------------------------')
     parser.clear_args()
 
-    # Tuples
+    print('\n------------Tuples------------')
     parser.add_arg(Argument('a', atype=Tuple[str, int, float, bool]))
     pprint.pprint(parser.parse('string1 2 3.3 true string4 5 6.6 true'))
-    print('-------------------------------')
     parser.clear_args()
 
-    # Dictionaries
+    print('\n------------Dictionaries------------')
     parser.add_arg(Argument('a', atype=dict[str, int]))
     pprint.pprint(parser.parse('key1 2 key3 4 key5 6'))
-    print('-------------------------------')
     parser.clear_args()

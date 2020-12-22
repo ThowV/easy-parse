@@ -62,6 +62,7 @@ def validate_numeric(input: str, atype: Union[int, float, complex]) -> list:
 
 def validate_string(input: str) -> list:
     multi_word = False
+    multi_word_identifier = ''
     real_char_passed = False
     input_parsed = ''
     char_index = 0
@@ -70,11 +71,12 @@ def validate_string(input: str) -> list:
         char_index = index
         input_parsed += input[index]
 
-        # Check if we are looping through the first word and the character is a quotation mark
-        if not multi_word and not real_char_passed and input[index] == '"':
+        # Check if we are looping through the first word and the character is a quotation mark or apostrophe
+        if not multi_word and not real_char_passed and (input[index] == '"' or input[index] == "'"):
             multi_word = True
-        # Check if we are validating a multi word and the character is a quotation mark
-        elif multi_word and real_char_passed and input[index] == '"':
+            multi_word_identifier = input[index]
+        # Check if we are validating a multi word and the character is a quotation mark or apostrophe
+        elif multi_word and real_char_passed and input[index] == multi_word_identifier:
             break
 
         # Check if we already passed anything else other than a space
