@@ -22,7 +22,8 @@ if __name__ == '__main__':
     parser.add_arg(Argument('b', atype=float))
     parser.add_arg(Argument('c', atype=float))
     parser.add_arg(Argument('d', atype=complex))
-    pprint.pprint(parser.parse('1 2.2 3,3 4+4j'))
+    parser.add_arg(Argument('e', atype=float))
+    pprint.pprint(parser.parse('1 2.2 3,3 4+4j "   5.5  "'))
     parser.clear_args()
 
     print('\n------------Unions------------')

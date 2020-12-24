@@ -42,22 +42,22 @@ def validate_boolean(input: str) -> list:
 
 
 def validate_numeric(input: str, atype: Union[int, float, complex]) -> list:
-    input_split = input.split(' ', 1)
+    parsed_string = validate_string(input)
 
     try:
         parsed_input: Union[int, float, complex] = 0
 
         if atype == int:
-            parsed_input = int(input_split[0])
+            parsed_input = int(parsed_string[0])
         elif atype == float:
-            input_split[0] = input_split[0].replace(',', '.')  # Make sure the formatting is correct
-            parsed_input = float(input_split[0])
+            parsed_string[0] = parsed_string[0].replace(',', '.')  # Make sure the formatting is correct
+            parsed_input = float(parsed_string[0])
         elif atype == complex:
-            parsed_input = complex(input_split[0])
+            parsed_input = complex(parsed_string[0])
 
-        return [parsed_input, input_split[1] if len(input_split) > 1 else '']
+        return [parsed_input, parsed_string[1] if len(parsed_string) > 1 else '']
     except ValueError:
-        raise ValueError(f'Error parsing "{input}" since "{input_split[0]}" could not be parsed to a numeric type.')
+        raise ValueError(f'Error parsing "{input}" since "{parsed_string[0]}" could not be parsed to a numeric type.')
 
 
 def validate_string(input: str) -> list:
