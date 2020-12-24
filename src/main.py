@@ -10,7 +10,11 @@ if __name__ == '__main__':
     print('\n------------Booleans------------')
     parser.add_arg(Argument('a', atype=bool))
     parser.add_arg(Argument('b', atype=bool))
-    pprint.pprint(parser.parse('true false'))
+    parser.add_arg(Argument('c', atype=bool))
+    parser.add_arg(Argument('d', atype=bool))
+    parser.add_arg(Argument('e', atype=bool))
+    parser.add_arg(Argument('f', atype=bool))
+    pprint.pprint(parser.parse('true false False 1 0 "  1  "'))
     parser.clear_args()
 
     print('\n------------Numerics------------')

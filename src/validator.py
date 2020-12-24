@@ -31,14 +31,14 @@ def validate(input: str, atype: type) -> list:
 
 
 def validate_boolean(input: str) -> list:
-    input_split = input.split(' ', 1)
+    input_parsed = validate_string(input)
 
-    if input_split[0].lower() == 'true':
-        return [True, input_split[1] if len(input_split) > 1 else '']
-    elif input_split[0].lower() == 'false':
-        return [False, input_split[1] if len(input_split) > 1 else '']
+    if input_parsed[0].lower().strip() == 'true' or input_parsed[0].strip() == '1':
+        return [True, input_parsed[1] if len(input_parsed) > 1 else '']
+    elif input_parsed[0].lower().strip() == 'false' or input_parsed[0].strip() == '0':
+        return [False, input_parsed[1] if len(input_parsed) > 1 else '']
     else:
-        raise ValueError(f'Error parsing "{input}" since "{input_split[0]}" could not be parsed to a boolean.')
+        raise ValueError(f'Error parsing "{input}" since "{input_parsed[0]}" could not be parsed to a boolean.')
 
 
 def validate_numeric(input: str, atype: Union[int, float, complex]) -> list:
@@ -137,3 +137,43 @@ def validate_collection(input: str, atype: Union[list, set, tuple, dict]) -> lis
         parsed_input = {parsed_input[i]: parsed_input[i+1] for i in range(0, len(parsed_input), 2)}
 
     return [parsed_input, unparsed_input[1] if unparsed_input else '']
+
+
+def validate_bytes(input: str):
+    pass
+    """
+    multi_word = False
+    multi_word_identifier = ''
+    real_char_passed = False
+    input_parsed = ''
+    char_index = 0
+
+    for index in range(len(input)):
+        char_index = index
+        input_parsed += input[index]
+
+        # Check if we are looping through the first word and the character is a quotation mark or apostrophe
+        if not multi_word and not real_char_passed and (input[index] == '"' or input[index] == "'"):
+            multi_word = True
+            multi_word_identifier = input[index]
+        # Check if we are validating a multi word and the character is a quotation mark or apostrophe
+        elif multi_word and real_char_passed and input[index] == multi_word_identifier:
+            break
+
+        # Check if we already passed anything else other than a space
+        if input[index] != ' ':
+            real_char_passed = True
+
+        # Check if we are entering a second word whilst multi word is not active
+        if real_char_passed and not multi_word and input[index] == ' ':
+            break
+
+    # Remove useless white space
+    input_parsed = input_parsed.strip()
+
+    # Remove the quotation marks
+    if multi_word:
+        input_parsed = input_parsed[1:len(input_parsed) - 1]
+
+    return [input_parsed, input[char_index + 1:]]
+    """
