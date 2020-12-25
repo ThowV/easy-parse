@@ -88,3 +88,8 @@ if __name__ == '__main__':
     parser.add_arg(Argument('a', atype=dict[str, int]))
     pprint.pprint(parser.parse('key1 2 key3 4 key5 6'))
     parser.clear_args()
+
+    print('\n------------Ranges------------')
+    parser.add_arg(Argument('a', atype=range))
+    pprint.pprint(parser.parse('0 20 2'))
+    parser.clear_args()

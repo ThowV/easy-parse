@@ -21,8 +21,8 @@ def validate(input: str, atype: type) -> list:
     # Union
     elif atype == Union:
         result = validate_union(input, atype_original)
-    # List, set, tuple or dictionary
-    elif atype == list or atype == set or atype == tuple or atype == dict:
+    # List, set, tuple, dictionary or range
+    elif atype == list or atype == set or atype == tuple or atype == dict or atype == range:
         result = validate_collection(input, atype_original)
     else:
         result = ['', input]
@@ -108,7 +108,7 @@ def validate_union(input: str, atype: Union) -> list:
     return ['', input]
 
 
-def validate_collection(input: str, atype: Union[list, set, tuple, dict]) -> list:
+def validate_collection(input: str, atype: Union[list, set, tuple, dict, range]) -> list:
     unparsed_input = input
     parsed_input = []
 
@@ -120,6 +120,9 @@ def validate_collection(input: str, atype: Union[list, set, tuple, dict]) -> lis
 
     # Parse all the subtypes
     sub_types = get_args(atype) if get_args(atype) else [str]
+
+    if atype == range:
+        sub_types = [int, int, int]
 
     for index in range(len(parsed_input)):
         sub_type_index = index % len(sub_types)
@@ -135,45 +138,7 @@ def validate_collection(input: str, atype: Union[list, set, tuple, dict]) -> lis
         parsed_input = tuple(parsed_input)
     elif atype == dict or get_origin(atype) == dict:
         parsed_input = {parsed_input[i]: parsed_input[i+1] for i in range(0, len(parsed_input), 2)}
+    elif atype == range:
+        parsed_input = range(*parsed_input)
 
     return [parsed_input, unparsed_input[1] if unparsed_input else '']
-
-
-def validate_bytes(input: str):
-    pass
-    """
-    multi_word = False
-    multi_word_identifier = ''
-    real_char_passed = False
-    input_parsed = ''
-    char_index = 0
-
-    for index in range(len(input)):
-        char_index = index
-        input_parsed += input[index]
-
-        # Check if we are looping through the first word and the character is a quotation mark or apostrophe
-        if not multi_word and not real_char_passed and (input[index] == '"' or input[index] == "'"):
-            multi_word = True
-            multi_word_identifier = input[index]
-        # Check if we are validating a multi word and the character is a quotation mark or apostrophe
-        elif multi_word and real_char_passed and input[index] == multi_word_identifier:
-            break
-
-        # Check if we already passed anything else other than a space
-        if input[index] != ' ':
-            real_char_passed = True
-
-        # Check if we are entering a second word whilst multi word is not active
-        if real_char_passed and not multi_word and input[index] == ' ':
-            break
-
-    # Remove useless white space
-    input_parsed = input_parsed.strip()
-
-    # Remove the quotation marks
-    if multi_word:
-        input_parsed = input_parsed[1:len(input_parsed) - 1]
-
-    return [input_parsed, input[char_index + 1:]]
-    """
