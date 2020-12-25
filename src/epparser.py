@@ -1,7 +1,7 @@
 from epargument import Argument
 from enum import Enum
-from typing import Union, get_args, get_origin
-from eptypes import instantiate, Type
+from typing import Union
+from eptypes import instantiate, Type, Collection
 
 
 class Parser:
@@ -18,7 +18,7 @@ class Parser:
         parsed_input = input
         
         for argument in self.registered_arguments:
-            result = parse(parsed_input, argument.atype)
+            result = parse(parsed_input, argument.argument_type)
 
             output[argument.name] = result[0]
             parsed_input = result[1]
@@ -158,15 +158,22 @@ def parse_union(input: str, argument: Type) -> list:
     return ['', input]
 
 
-def parse_collection(input: str, argument: Type) -> list:
+def parse_collection(input: str, argument: Collection) -> list:
     input_unparsed = input
     output = []
 
     # Parse everything to string first
+    parsed_amount = 0
     while len(input_unparsed) > 0:
         parsed = parse_string(input_unparsed)
         output.append(parsed[0])
         input_unparsed = parsed[1] if len(parsed) > 1 else ''
+
+        # Check if we reached the given collection max
+        parsed_amount += 1
+
+        if argument.max_size and parsed_amount >= argument.max_size:
+            break
 
     # Parse all the subtypes
     sub_types = argument.argument_sub_types if argument.argument_sub_types else [str]
