@@ -79,6 +79,11 @@ if __name__ == '__main__':
     pprint.pprint(parser.parse('"this is " a test "  trust" me'))
     parser.clear_args()
 
+    print('\n------------Frozen sets------------')
+    parser.add_arg(Argument('a', atype=frozenset))
+    pprint.pprint(parser.parse('"this is " a test "  trust" me'))
+    parser.clear_args()
+
     print('\n------------Tuples------------')
     parser.add_arg(Argument('a', atype=Tuple[str, int, float, bool]))
     pprint.pprint(parser.parse('string1 2 3.3 true string4 5 6.6 true'))

@@ -22,7 +22,7 @@ def validate(input: str, atype: type) -> list:
     elif atype == Union:
         result = validate_union(input, atype_original)
     # List, set, tuple, dictionary or range
-    elif atype == list or atype == set or atype == tuple or atype == dict or atype == range:
+    elif atype == list or atype == set or atype == frozenset or atype == tuple or atype == dict or atype == range:
         result = validate_collection(input, atype_original)
     else:
         result = ['', input]
@@ -108,7 +108,7 @@ def validate_union(input: str, atype: Union) -> list:
     return ['', input]
 
 
-def validate_collection(input: str, atype: Union[list, set, tuple, dict, range]) -> list:
+def validate_collection(input: str, atype: Union[list, set, frozenset, tuple, dict, range]) -> list:
     unparsed_input = input
     parsed_input = []
 
@@ -134,6 +134,8 @@ def validate_collection(input: str, atype: Union[list, set, tuple, dict, range])
     # Transform the list into whatever type was provided
     if atype == set or get_origin(atype) == set:
         parsed_input = set(parsed_input)
+    elif atype == frozenset or get_origin(atype) == frozenset:
+        parsed_input = frozenset(parsed_input)
     elif atype == tuple or get_origin(atype) == tuple:
         parsed_input = tuple(parsed_input)
     elif atype == dict or get_origin(atype) == dict:
