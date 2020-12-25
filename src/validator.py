@@ -1,8 +1,26 @@
+from enum import Enum
 from typing import Union, get_args, get_origin
 
 
-class StringValidateFinished(Exception):
-    pass
+class StringType(Enum):
+    STANDARD = 0
+    SINGLE = 1
+    DOUBLE = 2
+    TRIPLE_SINGLE = 3
+    TRIPLE_DOUBLE = 4
+
+
+def string_to_type(string: str) -> StringType:
+    if string == "'":
+        return StringType.SINGLE
+    elif string == '"':
+        return StringType.DOUBLE
+    elif string == "'''":
+        return StringType.TRIPLE_SINGLE
+    elif string == '"""':
+        return StringType.TRIPLE_DOUBLE
+    else:
+        return StringType.STANDARD
 
 
 def validate(input: str, atype: type) -> list:
@@ -61,40 +79,55 @@ def validate_numeric(input: str, atype: Union[int, float, complex]) -> list:
 
 
 def validate_string(input: str) -> list:
-    multi_word = False
-    multi_word_identifier = ''
-    real_char_passed = False
-    input_parsed = ''
-    char_index = 0
+    string_type = None
+    string_type_start = ''
+    string_type_stop = ''
+    input = input.strip()
+    index_top = 0
 
     for index in range(len(input)):
-        char_index = index
-        input_parsed += input[index]
+        index_top = index + 1
 
-        # Check if we are looping through the first word and the character is a quotation mark or apostrophe
-        if not multi_word and not real_char_passed and (input[index] == '"' or input[index] == "'"):
-            multi_word = True
-            multi_word_identifier = input[index]
-        # Check if we are validating a multi word and the character is a quotation mark or apostrophe
-        elif multi_word and real_char_passed and input[index] == multi_word_identifier:
-            break
+        # When we have a string type, check if we reached the end
+        if string_type:
+            if string_type != StringType.STANDARD:
+                if input[index] in string_type_start:
+                    # We might have reached the end
+                    string_type_stop += input[index]  # Add to the string type stop value for the next iteration
+                else:
+                    # This is not the end so reset the string type stop value
+                    string_type_stop = ''
 
-        # Check if we already passed anything else other than a space
-        if input[index] != ' ':
-            real_char_passed = True
+                # Check if we have reached the end by checking the string type stop value
+                if string_to_type(string_type_stop) == string_type:
+                    break
+            elif string_type == StringType.STANDARD and input[index] == ' ':
+                break
 
-        # Check if we are entering a second word whilst multi word is not active
-        if real_char_passed and not multi_word and input[index] == ' ':
-            break
+        # Figure out what type of string we are dealing with
+        if not string_type:
+            # If the string starts out with a quote we must check how many quotes of what type there are
+            # in order to get the actual type
+            if input[index] in ["'", '"']:
+                string_type_start += input[index]
+                index_next = (index + 1) if (index + 1) < len(input) else None
 
-    # Remove useless white space
-    input_parsed = input_parsed.strip()
+                # If the string type is not STANDARD or the next character is
+                # the same as the current we have to check the type further
+                if index_next and input[index_next] != input[index]:
+                    string_type = string_to_type(string_type_start.strip())
+            # If the string starts with anything other than a quote it must be of STANDARD type
+            else:
+                string_type = StringType.STANDARD
 
-    # Remove the quotation marks
-    if multi_word:
-        input_parsed = input_parsed[1:len(input_parsed) - 1]
+    # Finalization
+    output = input[len(string_type_start):(index_top - len(string_type_stop))]
+    input_left = input[len(string_type_start) + index_top:]
 
-    return [input_parsed, input[char_index + 1:]]
+    if string_type == StringType.STANDARD:
+        output = output.strip()
+
+    return [output, input_left]
 
 
 def validate_union(input: str, atype: Union) -> list:
@@ -139,7 +172,7 @@ def validate_collection(input: str, atype: Union[list, set, frozenset, tuple, di
     elif atype == tuple or get_origin(atype) == tuple:
         parsed_input = tuple(parsed_input)
     elif atype == dict or get_origin(atype) == dict:
-        parsed_input = {parsed_input[i]: parsed_input[i+1] for i in range(0, len(parsed_input), 2)}
+        parsed_input = {parsed_input[i]: parsed_input[i + 1] for i in range(0, len(parsed_input), 2)}
     elif atype == range:
         parsed_input = range(*parsed_input)
 
