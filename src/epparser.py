@@ -1,6 +1,7 @@
-from argument import Argument
+from epargument import Argument
 from enum import Enum
 from typing import Union, get_args, get_origin
+from eptypes import instantiate, Type
 
 
 class Parser:
@@ -46,25 +47,19 @@ def string_to_string_type(string: str) -> StringType:
         return StringType.STANDARD
 
 
-def parse(input: str, atype: type) -> list:
-    atype_original = atype
-    atype = get_origin(atype) if get_origin(atype) else atype
+def parse(input: str, argument: Union[type, Type]) -> list:
+    argument = argument if isinstance(argument, Type) else instantiate(argument)
 
-    # Boolean
-    if atype == bool:
+    if argument.argument_type == bool:
         result = parse_boolean(input)
-    # Numerics: Integer, float and complex
-    elif atype == int or atype == float or atype == complex:
-        result = parse_numeric(input, atype_original)
-    # String
-    elif atype == str:
+    elif argument.argument_type in [int, float, complex]:
+        result = parse_numeric(input, argument)
+    elif argument.argument_type == str:
         result = parse_string(input)
-    # Union
-    elif atype == Union:
-        result = parse_union(input, atype_original)
-    # List, set, tuple, dictionary or range
-    elif atype == list or atype == set or atype == frozenset or atype == tuple or atype == dict or atype == range:
-        result = parse_collection(input, atype_original)
+    elif argument.argument_type == Union:
+        result = parse_union(input, argument)
+    elif argument.argument_type in [list, set, frozenset, tuple, dict, range]:
+        result = parse_collection(input, argument)
     else:
         result = ['', input]
 
@@ -134,18 +129,18 @@ def parse_boolean(input: str) -> list:
         raise ValueError(f'Error parsing "{input}" since "{input_as_string[0]}" could not be parsed to a boolean.')
 
 
-def parse_numeric(input: str, atype: Union[int, float, complex]) -> list:
+def parse_numeric(input: str, argument: Type) -> list:
     input_as_string = parse_string(input)
 
     try:
         parsed_input: Union[int, float, complex] = 0
 
-        if atype == int:
+        if argument.argument_type == int:
             parsed_input = int(input_as_string[0])
-        elif atype == float:
+        elif argument.argument_type == float:
             input_as_string[0] = input_as_string[0].replace(',', '.')  # Make sure the formatting is correct
             parsed_input = float(input_as_string[0])
-        elif atype == complex:
+        elif argument.argument_type == complex:
             parsed_input = complex(input_as_string[0])
 
         return [parsed_input, input_as_string[1] if len(input_as_string) > 1 else '']
@@ -153,8 +148,8 @@ def parse_numeric(input: str, atype: Union[int, float, complex]) -> list:
         raise ValueError(f'Error parsing "{input}" since "{input_as_string[0]}" could not be parsed to a numeric type.')
 
 
-def parse_union(input: str, atype: Union) -> list:
-    for sub_atype in get_args(atype):
+def parse_union(input: str, argument: Type) -> list:
+    for sub_atype in argument.argument_sub_types:
         try:
             return parse(input, sub_atype)
         except ValueError:
@@ -163,7 +158,7 @@ def parse_union(input: str, atype: Union) -> list:
     return ['', input]
 
 
-def parse_collection(input: str, atype: Union[list, set, frozenset, tuple, dict, range]) -> list:
+def parse_collection(input: str, argument: Type) -> list:
     input_unparsed = input
     output = []
 
@@ -174,9 +169,9 @@ def parse_collection(input: str, atype: Union[list, set, frozenset, tuple, dict,
         input_unparsed = parsed[1] if len(parsed) > 1 else ''
 
     # Parse all the subtypes
-    sub_types = get_args(atype) if get_args(atype) else [str]
+    sub_types = argument.argument_sub_types if argument.argument_sub_types else [str]
 
-    if atype == range:
+    if argument.argument_type == range:
         sub_types = [int, int, int]
 
     for index in range(len(output)):
@@ -187,15 +182,15 @@ def parse_collection(input: str, atype: Union[list, set, frozenset, tuple, dict,
             output[index] = parse(output[index], sub_types[sub_type_index])[0]
 
     # Transform the list into whatever type was provided
-    if atype == set or get_origin(atype) == set:
+    if argument.argument_type == set:
         output = set(output)
-    elif atype == frozenset or get_origin(atype) == frozenset:
+    elif argument.argument_type == frozenset:
         output = frozenset(output)
-    elif atype == tuple or get_origin(atype) == tuple:
+    elif argument.argument_type == tuple:
         output = tuple(output)
-    elif atype == dict or get_origin(atype) == dict:
+    elif argument.argument_type == dict:
         output = {output[i]: output[i + 1] for i in range(0, len(output), 2)}
-    elif atype == range:
+    elif argument.argument_type == range:
         output = range(*output)
 
     return [output, input_unparsed[1] if input_unparsed else '']

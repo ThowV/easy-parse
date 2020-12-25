@@ -1,8 +1,9 @@
 import pprint
 
 from typing import Union, List, Tuple
-from argument import Argument
+from epargument import Argument
 from epparser import Parser
+from eptypes import Collection
 
 if __name__ == '__main__':
     parser = Parser()
@@ -72,6 +73,11 @@ if __name__ == '__main__':
 
     print('\n------------Lists------------')
     parser.add_arg(Argument('a', atype=list))
+    pprint.pprint(parser.parse('"this is " a test "  trust" me'))
+    parser.clear_args()
+
+    print('------------Lists: Easy parser type------------')
+    parser.add_arg(Argument('a', atype=Collection(list)))
     pprint.pprint(parser.parse('"this is " a test "  trust" me'))
     parser.clear_args()
 
