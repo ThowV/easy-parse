@@ -1,7 +1,7 @@
 from epargument import Argument
 from enum import Enum
 from typing import Union
-from eptypes import Type, Collection
+from eptypes import EPType, EPCollection
 
 
 class Parser:
@@ -47,7 +47,7 @@ def string_to_string_type(string: str) -> StringType:
         return StringType.STANDARD
 
 
-def parse(input: str, argument_type: Type) -> list:
+def parse(input: str, argument_type: EPType) -> list:
     if argument_type.origin == bool:
         result = parse_boolean(input)
     elif argument_type.origin in [int, float, complex]:
@@ -56,7 +56,7 @@ def parse(input: str, argument_type: Type) -> list:
         result = parse_string(input)
     elif argument_type.origin == Union:
         result = parse_union(input, argument_type)
-    elif isinstance(argument_type, Collection):
+    elif isinstance(argument_type, EPCollection):
         result = parse_collection(input, argument_type)
     else:
         result = ['', input]
@@ -127,7 +127,7 @@ def parse_boolean(input: str) -> list:
         raise ValueError(f'Error parsing "{input}" since "{input_as_string[0]}" could not be parsed to a boolean.')
 
 
-def parse_numeric(input: str, argument_type: Type) -> list:
+def parse_numeric(input: str, argument_type: EPType) -> list:
     input_as_string = parse_string(input)
 
     try:
@@ -146,7 +146,7 @@ def parse_numeric(input: str, argument_type: Type) -> list:
         raise ValueError(f'Error parsing "{input}" since "{input_as_string[0]}" could not be parsed to a numeric type.')
 
 
-def parse_union(input: str, argument_type: Type) -> list:
+def parse_union(input: str, argument_type: EPType) -> list:
     for sub_atype in argument_type.sub_args:
         try:
             return parse(input, sub_atype)
@@ -156,7 +156,7 @@ def parse_union(input: str, argument_type: Type) -> list:
     return ['', input]
 
 
-def parse_collection(input: str, argument_type: Collection) -> list:
+def parse_collection(input: str, argument_type: EPCollection) -> list:
     input_unparsed = input
     output = []
 

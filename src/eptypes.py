@@ -1,56 +1,102 @@
 from typing import Union, List, Set, FrozenSet, Tuple, Dict, get_origin, get_args
 
 
-class Type:
+class EPType:
     origin: type
-    sub_args: Union[list, None]
 
     def __init__(self, argument_type: type):
         # Set the origin
         self.origin = get_origin(argument_type) if get_origin(argument_type) else argument_type
 
+
+class EPTypeWithSub(EPType):
+    sub_args: list
+
+    def __init__(self, argument_type: type, sub_args: list = None):
+        super().__init__(argument_type)
+
         # Set the sub arguments
-        if get_args(argument_type):
+        self.sub_args = sub_args
+
+        if not self.sub_args and get_args(argument_type):
             self.sub_args = list(get_args(argument_type))
 
+        if self.sub_args:
             for index in range(len(self.sub_args)):
                 # Make sure the type is not already an eptype
-                if not isinstance(self.sub_args[index], Type):
+                if not isinstance(self.sub_args[index], EPType):
                     self.sub_args[index] = instantiate(self.sub_args[index])
-        else:
-            self.sub_args = None
 
 
-class Collection(Type):
-    max_size: Union[int, None]
+class EPCollection(EPTypeWithSub):
+    max_size: int
 
     def __init__(self,
                  argument_type: Union[list, List, set, Set, frozenset, FrozenSet, tuple, Tuple, dict, Dict, range],
-                 max_size: int = None):
-        super().__init__(argument_type)
+                 sub_args: list = None, max_size: int = None):
+        super().__init__(argument_type, sub_args)
 
-        # Set the sub argument type
-        if self.origin == range:  # If the origin is range we always set the sub types manually
-            self.sub_args = [instantiate(int_type) for int_type in [int, int, int]]
-        elif not self.sub_args:  # If there are no sub types provided and the origin is not range
+        if not self.sub_args:  # If there are no sub arguments provided
             self.sub_args = [instantiate(str)]
 
-        # Set the max size
         self.max_size = max_size
 
-        if self.max_size:
-            if self.origin == tuple and self.sub_args:
-                self.max_size *= len(self.sub_args)
-            elif self.origin == dict:
-                self.max_size *= 2
-            elif self.origin == range:
-                self.max_size = 3  # Range has a fixed size of 3
+
+class EPList(EPCollection):
+    def __init__(self, sub_args: list = None, max_size: int = None):
+        super().__init__(list[str], sub_args, max_size)
 
 
-def instantiate(argument_type: type) -> Type:
-    argument_type_builtin = get_origin(argument_type) if get_origin(argument_type) else argument_type
+class EPSet(EPCollection):
+    def __init__(self, sub_args: list = None, max_size: int = None):
+        super().__init__(set[str], sub_args, max_size)
 
-    if argument_type_builtin in [list, set, frozenset, tuple, dict, range]:
-        return Collection(argument_type)
+
+class EPFrozenSet(EPCollection):
+    def __init__(self, sub_args: list = None, max_size: int = None):
+        super().__init__(frozenset[str], sub_args, max_size)
+
+
+class EPTuple(EPCollection):
+    def __init__(self, sub_args: list = None, max_size: int = None):
+        if sub_args and max_size:
+            max_size *= len(sub_args)
+
+        super().__init__(tuple[str], sub_args, max_size)
+
+
+class EPDict(EPCollection):
+    def __init__(self, sub_args: list = None, max_size: int = None):
+        if max_size:
+            max_size *= 2
+
+        super().__init__(dict[str, str], sub_args, max_size)
+
+
+class EPRange(EPCollection):
+    def __init__(self):
+        super().__init__(range, sub_args=[int, int, int], max_size=3)
+
+
+def instantiate(argument_type: type) -> EPType:
+    origin = get_origin(argument_type) if get_origin(argument_type) else argument_type
+    sub_args = list(get_args(argument_type)) if get_args(argument_type) else None
+
+    # Collection types
+    if origin == list:
+        return EPList(sub_args)
+    elif origin == set:
+        return EPSet(sub_args)
+    elif origin == frozenset:
+        return EPFrozenSet(sub_args)
+    elif origin == tuple:
+        return EPTuple(sub_args)
+    elif origin == dict:
+        return EPDict(sub_args)
+    elif origin == range:
+        return EPRange()
+    # Others
+    elif origin == Union:
+        return EPTypeWithSub(argument_type)
     else:
-        return Type(argument_type)
+        return EPType(argument_type)

@@ -3,7 +3,7 @@ import pprint
 from typing import Union, List, Tuple
 from epargument import Argument
 from epparser import Parser
-from eptypes import Collection
+from eptypes import EPCollection, EPList, EPDict, EPRange, EPSet, EPFrozenSet, EPTuple
 
 if __name__ == '__main__':
     parser = Parser()
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     parser.clear_args()
 
     print('------------Lists: Easy parser type------------')
-    parser.add_arg(Argument('a', argument_type=Collection(list, max_size=3)))
+    parser.add_arg(Argument('a', argument_type=EPCollection(list, max_size=3)))
     pprint.pprint(parser.parse('"this is " a test "  trust" me'))
     parser.clear_args()
 
@@ -92,7 +92,7 @@ if __name__ == '__main__':
     parser.clear_args()
 
     print('------------Lists: Nested easy parser types------------')
-    parser.add_arg(Argument('a', argument_type=Collection(list[Collection(list, max_size=2)], max_size=3)))
+    parser.add_arg(Argument('a', argument_type=EPList(sub_args=[EPList(max_size=2)], max_size=3)))
     pprint.pprint(parser.parse('the ultimate test trust me for once in your life'))
     parser.clear_args()
 
@@ -101,8 +101,18 @@ if __name__ == '__main__':
     pprint.pprint(parser.parse('"this is " a test "  trust" me'))
     parser.clear_args()
 
+    print('------------Sets: Easy parser type------------')
+    parser.add_arg(Argument('a', argument_type=EPSet()))
+    pprint.pprint(parser.parse('"this is " a test "  trust" me'))
+    parser.clear_args()
+
     print('\n------------Frozen sets------------')
     parser.add_arg(Argument('a', argument_type=frozenset))
+    pprint.pprint(parser.parse('"this is " a test "  trust" me'))
+    parser.clear_args()
+
+    print('------------Frozen: Easy parser type------------')
+    parser.add_arg(Argument('a', argument_type=EPFrozenSet()))
     pprint.pprint(parser.parse('"this is " a test "  trust" me'))
     parser.clear_args()
 
@@ -112,8 +122,7 @@ if __name__ == '__main__':
     parser.clear_args()
 
     print('------------Tuples: Easy parser type------------')
-    print(Tuple[str, int, float, bool])
-    parser.add_arg(Argument('a', argument_type=Collection(Tuple[str, int, float, bool], max_size=1)))
+    parser.add_arg(Argument('a', argument_type=EPTuple(sub_args=[str, int, float, bool], max_size=1)))
     pprint.pprint(parser.parse('string1 2 3.3 true string4 5 6.6 true'))
     parser.clear_args()
 
@@ -123,7 +132,7 @@ if __name__ == '__main__':
     parser.clear_args()
 
     print('------------Dictionaries: Easy parser type------------')
-    parser.add_arg(Argument('a', argument_type=Collection(dict[str, int], 2)))
+    parser.add_arg(Argument('a', argument_type=EPDict(sub_args=[str, int], max_size=2)))
     pprint.pprint(parser.parse('key1 2 key3 4 key5 6'))
     parser.clear_args()
 
