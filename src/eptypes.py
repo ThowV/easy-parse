@@ -10,6 +10,11 @@ class EPType:
 
 
 # region Inherits EPType
+class EPString(EPType):
+    def __init__(self):
+        super().__init__(str)
+
+
 class EPBool(EPType):
     def __init__(self):
         super().__init__(bool)
@@ -121,11 +126,15 @@ def instantiate(argument_type: type) -> EPType:
     try:
         type_converting_dict = {
             # type :    [EPType, Pass sub args]
+            str:        [EPString, False],
+
             bool:       [EPBool, False],
 
             int:        [EPInt, False],
             float:      [EPFloat, False],
             complex:    [EPComplex, False],
+
+            Union: [EPUnion, True],
 
             list:       [EPList, True],
             set:        [EPSet, True],
@@ -133,8 +142,6 @@ def instantiate(argument_type: type) -> EPType:
             tuple:      [EPTuple, True],
             dict:       [EPDict, True],
             range:      [EPRange, False],
-
-            Union:      [EPUnion, True],
         }
 
         result = type_converting_dict[origin]

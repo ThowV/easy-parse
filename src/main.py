@@ -4,7 +4,7 @@ from typing import Union, List, Tuple
 from epargument import Argument
 from epparser import Parser
 from eptypes import EPList, EPDict, EPRange, EPSet, EPFrozenSet, EPTuple, EPBool, EPInt, EPFloat, \
-    EPComplex, EPUnion
+    EPComplex, EPUnion, EPString
 
 if __name__ == '__main__':
     parser = Parser()
@@ -89,6 +89,11 @@ if __name__ == '__main__':
     print('------------Strings: Triple quoted using double quotes------------')
     parser.add_arg(Argument('a', argument_type=str))
     pprint.pprint(parser.parse(''' """this 'is' a "test" trust me""" '''))
+    parser.clear_args()
+
+    print('------------Strings: Single quotes and Easy parse type------------')
+    parser.add_arg(Argument('a', argument_type=EPList(EPString())))
+    pprint.pprint(parser.parse("' this is' 'a test ' ' trust me '"))
     parser.clear_args()
 
     print('\n------------Lists------------')
