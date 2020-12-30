@@ -2,12 +2,23 @@ from typing import Union, List, Set, FrozenSet, Tuple, Dict, get_origin, get_arg
 
 
 class Type:
-    argument_type: type
-    argument_sub_types: Union[tuple[any], None]
+    origin: type
+    sub_args: Union[list, None]
 
     def __init__(self, argument_type: type):
-        self.argument_type = get_origin(argument_type) if get_origin(argument_type) else argument_type
-        self.argument_sub_types = get_args(argument_type) if get_args(argument_type) else None
+        # Set the origin
+        self.origin = get_origin(argument_type) if get_origin(argument_type) else argument_type
+
+        # Set the sub arguments
+        if get_args(argument_type):
+            self.sub_args = list(get_args(argument_type))
+
+            for index in range(len(self.sub_args)):
+                # Make sure the type is not already an eptype
+                if not isinstance(self.sub_args[index], Type):
+                    self.sub_args[index] = instantiate(self.sub_args[index])
+        else:
+            self.sub_args = None
 
 
 class Collection(Type):
@@ -18,15 +29,21 @@ class Collection(Type):
                  max_size: int = None):
         super().__init__(argument_type)
 
+        # Set the sub argument type
+        if self.origin == range:  # If the origin is range we always set the sub types manually
+            self.sub_args = [instantiate(int_type) for int_type in [int, int, int]]
+        elif not self.sub_args:  # If there are no sub types provided and the origin is not range
+            self.sub_args = [instantiate(str)]
+
         # Set the max size
         self.max_size = max_size
 
         if self.max_size:
-            if self.argument_type == tuple and self.argument_sub_types:
-                self.max_size *= len(self.argument_sub_types)
-            elif self.argument_type == dict:
+            if self.origin == tuple and self.sub_args:
+                self.max_size *= len(self.sub_args)
+            elif self.origin == dict:
                 self.max_size *= 2
-            elif self.argument_type == range:
+            elif self.origin == range:
                 self.max_size = 3  # Range has a fixed size of 3
 
 

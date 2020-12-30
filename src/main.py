@@ -1,6 +1,6 @@
 import pprint
 
-from typing import Union, List, Tuple, get_args
+from typing import Union, List, Tuple
 from epargument import Argument
 from epparser import Parser
 from eptypes import Collection
@@ -89,6 +89,11 @@ if __name__ == '__main__':
     print('------------Lists: Union as sub type------------')
     parser.add_arg(Argument('a', argument_type=List[Union[int, float]]))
     pprint.pprint(parser.parse('1 2.2 3,3'))
+    parser.clear_args()
+
+    print('------------Lists: Nested easy parser types------------')
+    parser.add_arg(Argument('a', argument_type=Collection(list[Collection(list, max_size=2)], max_size=3)))
+    pprint.pprint(parser.parse('the ultimate test trust me for once in your life'))
     parser.clear_args()
 
     print('\n------------Sets------------')
