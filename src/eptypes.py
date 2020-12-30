@@ -1,4 +1,4 @@
-from typing import Union, List, Set, FrozenSet, Tuple, Dict, get_origin, get_args
+from typing import Union, get_origin, get_args
 
 
 class EPType:
@@ -9,6 +9,11 @@ class EPType:
         self.origin = get_origin(argument_type) if get_origin(argument_type) else argument_type
 
 
+class EPBool(EPType):
+    def __init__(self):
+        super().__init__(bool)
+
+
 class EPTypeWithSub(EPType):
     sub_args: list
 
@@ -16,7 +21,7 @@ class EPTypeWithSub(EPType):
         super().__init__(argument_type)
 
         # Set the sub arguments
-        self.sub_args = sub_args
+        self.sub_args = sub_args if isinstance(sub_args, list) else ([sub_args] if sub_args else None)
 
         if not self.sub_args and get_args(argument_type):
             self.sub_args = list(get_args(argument_type))
@@ -31,9 +36,10 @@ class EPTypeWithSub(EPType):
 class EPCollection(EPTypeWithSub):
     max_size: int
 
-    def __init__(self,
-                 argument_type: Union[list, List, set, Set, frozenset, FrozenSet, tuple, Tuple, dict, Dict, range],
-                 sub_args: list = None, max_size: int = None):
+    def __init__(
+            self, argument_type: type,
+            sub_args: list = None, max_size: int = None
+    ):
         super().__init__(argument_type, sub_args)
 
         if not self.sub_args:  # If there are no sub arguments provided
