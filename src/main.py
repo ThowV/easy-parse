@@ -3,7 +3,7 @@ import pprint
 from typing import Union, List, Tuple
 from epargument import Argument
 from epparser import Parser
-from eptypes import EPCollection, EPList, EPDict, EPRange, EPSet, EPFrozenSet, EPTuple, EPBool
+from eptypes import EPCollection, EPList, EPDict, EPRange, EPSet, EPFrozenSet, EPTuple, EPBool, EPInt, EPFloat, EPComplex
 
 if __name__ == '__main__':
     parser = Parser()
@@ -30,6 +30,15 @@ if __name__ == '__main__':
     parser.add_arg(Argument('c', argument_type=float))
     parser.add_arg(Argument('d', argument_type=complex))
     parser.add_arg(Argument('e', argument_type=float))
+    pprint.pprint(parser.parse('1 2.2 3,3 4+4j "   5.5  "'))
+    parser.clear_args()
+
+    print('------------Numerics: Easy parse types------------')
+    parser.add_arg(Argument('a', argument_type=EPInt()))
+    parser.add_arg(Argument('b', argument_type=EPFloat()))
+    parser.add_arg(Argument('c', argument_type=EPFloat()))
+    parser.add_arg(Argument('d', argument_type=EPComplex()))
+    parser.add_arg(Argument('e', argument_type=EPFloat()))
     pprint.pprint(parser.parse('1 2.2 3,3 4+4j "   5.5  "'))
     parser.clear_args()
 

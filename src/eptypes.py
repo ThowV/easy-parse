@@ -9,9 +9,33 @@ class EPType:
         self.origin = get_origin(argument_type) if get_origin(argument_type) else argument_type
 
 
+# region Inherits EPType
 class EPBool(EPType):
     def __init__(self):
         super().__init__(bool)
+
+
+class EPNumeric(EPType):
+    def __init__(self, argument_type: type):
+        super().__init__(argument_type)
+
+
+# region Inherits EPNumeric
+class EPInt(EPNumeric):
+    def __init__(self):
+        super().__init__(int)
+
+
+class EPFloat(EPNumeric):
+    def __init__(self):
+        super().__init__(float)
+
+
+class EPComplex(EPNumeric):
+    def __init__(self):
+        super().__init__(complex)
+# endregion
+# endregion
 
 
 class EPTypeWithSub(EPType):
@@ -33,6 +57,7 @@ class EPTypeWithSub(EPType):
                     self.sub_args[index] = instantiate(self.sub_args[index])
 
 
+# region Inherits EPTypeWithSub
 class EPCollection(EPTypeWithSub):
     max_size: int
 
@@ -48,6 +73,7 @@ class EPCollection(EPTypeWithSub):
         self.max_size = max_size
 
 
+# region Inherits EPCollection
 class EPList(EPCollection):
     def __init__(self, sub_args: list = None, max_size: int = None):
         super().__init__(list[str], sub_args, max_size)
@@ -82,6 +108,8 @@ class EPDict(EPCollection):
 class EPRange(EPCollection):
     def __init__(self):
         super().__init__(range, sub_args=[int, int, int], max_size=3)
+# endregion
+# endregion
 
 
 def instantiate(argument_type: type) -> EPType:
