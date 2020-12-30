@@ -3,7 +3,8 @@ import pprint
 from typing import Union, List, Tuple
 from epargument import Argument
 from epparser import Parser
-from eptypes import EPCollection, EPList, EPDict, EPRange, EPSet, EPFrozenSet, EPTuple, EPBool, EPInt, EPFloat, EPComplex
+from eptypes import EPList, EPDict, EPRange, EPSet, EPFrozenSet, EPTuple, EPBool, EPInt, EPFloat, \
+    EPComplex, EPUnion
 
 if __name__ == '__main__':
     parser = Parser()
@@ -51,6 +52,11 @@ if __name__ == '__main__':
     pprint.pprint(parser.parse('1 2.2 3,3 4 5.5'))
     parser.clear_args()
 
+    print('------------Unions: Easy parse type------------')
+    parser.add_arg(Argument('a', argument_type=EPList(EPUnion([int, float]))))
+    pprint.pprint(parser.parse('1 2.2 3,3 4 5.5'))
+    parser.clear_args()
+
     print('\n------------Strings: No quotes------------')
     parser.add_arg(Argument('a', argument_type=str))
     parser.add_arg(Argument('b', argument_type=str))
@@ -91,7 +97,7 @@ if __name__ == '__main__':
     parser.clear_args()
 
     print('------------Lists: Easy parse type------------')
-    parser.add_arg(Argument('a', argument_type=EPCollection(list, max_size=3)))
+    parser.add_arg(Argument('a', argument_type=EPList(max_size=3)))
     pprint.pprint(parser.parse('"this is " a test "  trust" me'))
     parser.clear_args()
 

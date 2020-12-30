@@ -1,7 +1,7 @@
 from epargument import Argument
 from enum import Enum
 from typing import Union
-from eptypes import EPType, EPCollection
+from eptypes import EPType, EPCollection, EPTypeWithSub
 
 
 class Parser:
@@ -146,7 +146,7 @@ def parse_numeric(input: str, argument_type: EPType) -> list:
         raise ValueError(f'Error parsing "{input}" since "{input_as_string[0]}" could not be parsed to a numeric type.')
 
 
-def parse_union(input: str, argument_type: EPType) -> list:
+def parse_union(input: str, argument_type: EPTypeWithSub) -> list:
     for sub_atype in argument_type.sub_args:
         try:
             return parse(input, sub_atype)
