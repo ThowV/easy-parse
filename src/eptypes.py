@@ -21,19 +21,25 @@ class EPBool(EPType):
 
 
 class EPNumeric(EPType):
-    def __init__(self, argument_type: type):
+    min: Union[int, float]
+    max: Union[int, float]
+
+    def __init__(self, argument_type: type, min: Union[int, float] = None, max: Union[int, float] = None):
         super().__init__(argument_type)
+
+        self.min = min
+        self.max = max
 
 
 # region Inherits EPNumeric
 class EPInt(EPNumeric):
-    def __init__(self):
-        super().__init__(int)
+    def __init__(self, min: int = None, max: int = None):
+        super().__init__(int, min=min, max=max)
 
 
 class EPFloat(EPNumeric):
-    def __init__(self):
-        super().__init__(float)
+    def __init__(self, min: float = None, max: float = None):
+        super().__init__(float, min=min, max=max)
 
 
 class EPComplex(EPNumeric):

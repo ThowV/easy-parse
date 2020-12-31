@@ -1,7 +1,10 @@
 from epargument import Argument
 from enum import Enum
 from typing import Union
-from eptypes import EPType, EPCollection, EPTypeWithSub
+
+from epexceptions import IntOverMaximumError, IntUnderMinimumError, FloatUnderMinimumError, FloatOverMaximumError
+from eptypes import EPType, EPCollection, EPTypeWithSub, EPNumeric
+from epvalidator import validate_numeric
 
 
 class Parser:
@@ -127,7 +130,7 @@ def parse_boolean(input: str) -> list:
         raise ValueError(f'Error parsing "{input}" since "{input_as_string[0]}" could not be parsed to a boolean.')
 
 
-def parse_numeric(input: str, argument_type: EPType) -> list:
+def parse_numeric(input: str, argument_type: EPNumeric) -> list:
     input_as_string = parse_string(input)
 
     try:
@@ -140,6 +143,8 @@ def parse_numeric(input: str, argument_type: EPType) -> list:
             parsed_input = float(input_as_string[0])
         elif argument_type.origin == complex:
             parsed_input = complex(input_as_string[0])
+
+        validate_numeric(argument_type, parsed_input)
 
         return [parsed_input, input_as_string[1] if len(input_as_string) > 1 else '']
     except ValueError:

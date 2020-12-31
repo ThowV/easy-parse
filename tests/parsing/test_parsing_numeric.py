@@ -1,3 +1,5 @@
+from epexceptions import NumericUnderMinimumError, IntUnderMinimumError, FloatUnderMinimumError, \
+    NumericOverMaximumError, IntOverMaximumError, FloatOverMaximumError
 from tests.parsing.test_parsing import TestParsing
 from epargument import Argument
 from eptypes import EPInt, EPFloat, EPComplex
@@ -35,3 +37,49 @@ class TestParsingString(TestParsing):
 
         # Assert
         self.assertEqual(assume, result)
+
+    def test_numeric_standard_with_numeric_under_minimum_error(self):
+        # Action
+        self.parser.add_arg(Argument('a', argument_type=EPInt(min=10)))
+
+        # Assert
+        with self.assertRaises(NumericUnderMinimumError):
+            self.parser.parse('1')
+
+        with self.assertRaises(IntUnderMinimumError):
+            self.parser.parse('1')
+
+        # Action
+        self.parser.clear_args()
+        self.parser.add_arg(Argument('a', argument_type=EPFloat(min=10)))
+
+        # Assert
+        with self.assertRaises(NumericUnderMinimumError):
+            self.parser.parse('1.1')
+
+        with self.assertRaises(FloatUnderMinimumError):
+            self.parser.parse('1.1')
+
+    def test_numeric_standard_with_numeric_over_maximum_error(self):
+        # Action
+        self.parser.add_arg(Argument('a', argument_type=EPInt(max=0)))
+
+        # Assert
+        with self.assertRaises(NumericOverMaximumError):
+            self.parser.parse('1')
+
+        with self.assertRaises(IntOverMaximumError):
+            self.parser.parse('1')
+
+        # Action
+        self.parser.clear_args()
+        self.parser.add_arg(Argument('a', argument_type=EPFloat(max=0)))
+
+        # Assert
+        with self.assertRaises(NumericOverMaximumError):
+            self.parser.parse('1.1')
+
+        with self.assertRaises(FloatOverMaximumError):
+            self.parser.parse('1.1')
+
+
