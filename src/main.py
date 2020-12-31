@@ -9,22 +9,6 @@ from eptypes import EPList, EPDict, EPRange, EPSet, EPFrozenSet, EPTuple, EPBool
 if __name__ == '__main__':
     parser = Parser()
 
-    print('\n------------Booleans------------')
-    parser.add_arg(Argument('a', argument_type=bool))
-    parser.add_arg(Argument('b', argument_type=bool))
-    parser.add_arg(Argument('c', argument_type=bool))
-    parser.add_arg(Argument('d', argument_type=bool))
-    parser.add_arg(Argument('e', argument_type=bool))
-    parser.add_arg(Argument('f', argument_type=bool))
-    parser.add_arg(Argument('g', argument_type=bool))
-    pprint.pprint(parser.parse('true false False 1 0 "  1  " "  0  "'))
-    parser.clear_args()
-
-    print('\n------------Booleans: Easy parse type------------')
-    parser.add_arg(Argument('a', argument_type=EPList(EPBool())))
-    pprint.pprint(parser.parse('true false False 1 0 "  1  " "  0  "'))
-    parser.clear_args()
-
     print('\n------------Numerics------------')
     parser.add_arg(Argument('a', argument_type=int))
     parser.add_arg(Argument('b', argument_type=float))

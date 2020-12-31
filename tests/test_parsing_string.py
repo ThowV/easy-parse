@@ -27,7 +27,7 @@ class TestParsingString(unittest.TestCase):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_string_no_quotes_with_easy_parser_type(self):
+    def test_string_no_quotes_with_easy_parse_type(self):
         # Assume
         assume = {'a': 'this', 'b': 'is', 'c': 'a', 'd': 'tests', 'e': 'trust', 'f': 'me'}
 
