@@ -1,16 +1,11 @@
-import unittest
 from typing import Union
 
+from tests.parsing.test_parsing import TestParsing
 from epargument import Argument
-from epparser import Parser
 from eptypes import EPUnion
 
 
-class TestParsingString(unittest.TestCase):
-    def setUp(self):
-        self.parser = Parser()
-        self.parser.clear_args()
-
+class TestParsingString(TestParsing):
     def test_union_standard(self):
         # Assume
         assume = {'a': 1, 'b': 2.2, 'c': 3.3, 'd': 4.0}

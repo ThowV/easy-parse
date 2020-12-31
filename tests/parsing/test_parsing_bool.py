@@ -1,15 +1,9 @@
-import unittest
-
+from tests.parsing.test_parsing import TestParsing
 from epargument import Argument
-from epparser import Parser
 from eptypes import EPBool
 
 
-class TestParsingString(unittest.TestCase):
-    def setUp(self):
-        self.parser = Parser()
-        self.parser.clear_args()
-
+class TestParsingString(TestParsing):
     def test_bool_standard(self):
         # Assume
         assume = {'a': True, 'b': False, 'c': True, 'd': False}
