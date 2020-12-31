@@ -3,25 +3,10 @@ import pprint
 from typing import Union, List, Tuple
 from epargument import Argument
 from epparser import Parser
-from eptypes import EPList, EPDict, EPRange, EPSet, EPFrozenSet, EPTuple, EPBool, EPInt, EPFloat, \
-    EPComplex, EPUnion, EPString
+from eptypes import EPList, EPDict, EPRange, EPSet, EPFrozenSet, EPTuple
 
 if __name__ == '__main__':
     parser = Parser()
-
-    print('\n------------Unions------------')
-    parser.add_arg(Argument('a', argument_type=Union[int, float]))
-    parser.add_arg(Argument('b', argument_type=Union[int, float]))
-    parser.add_arg(Argument('c', argument_type=Union[float, int]))
-    parser.add_arg(Argument('d', argument_type=Union[float, int]))
-    parser.add_arg(Argument('e', argument_type=Union[Union[int, float], int]))
-    pprint.pprint(parser.parse('1 2.2 3,3 4 5.5'))
-    parser.clear_args()
-
-    print('------------Unions: Easy parse type------------')
-    parser.add_arg(Argument('a', argument_type=EPList(EPUnion([int, float]))))
-    pprint.pprint(parser.parse('1 2.2 3,3 4 5.5'))
-    parser.clear_args()
 
     print('\n------------Lists------------')
     parser.add_arg(Argument('a', argument_type=list))
