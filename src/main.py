@@ -57,53 +57,14 @@ if __name__ == '__main__':
     pprint.pprint(parser.parse('1 2.2 3,3 4 5.5'))
     parser.clear_args()
 
-    print('\n------------Strings: No quotes------------')
-    parser.add_arg(Argument('a', argument_type=str))
-    parser.add_arg(Argument('b', argument_type=str))
-    parser.add_arg(Argument('c', argument_type=str))
-    parser.add_arg(Argument('d', argument_type=str))
-    parser.add_arg(Argument('e', argument_type=str))
-    parser.add_arg(Argument('f', argument_type=str))
-    pprint.pprint(parser.parse("this is a test trust me"))
-    parser.clear_args()
-
-    print('------------Strings: Single quotes------------')
-    parser.add_arg(Argument('a', argument_type=str))
-    parser.add_arg(Argument('b', argument_type=str))
-    parser.add_arg(Argument('c', argument_type=str))
-    pprint.pprint(parser.parse("' this is' 'a test ' ' trust me '"))
-    parser.clear_args()
-
-    print('------------Strings: Double quotes------------')
-    parser.add_arg(Argument('a', argument_type=str))
-    parser.add_arg(Argument('b', argument_type=str))
-    parser.add_arg(Argument('c', argument_type=str))
-    pprint.pprint(parser.parse('" this is" "a test " " trust me "'))
-    parser.clear_args()
-
-    print('------------Strings: Triple quoted using single quotes------------')
-    parser.add_arg(Argument('a', argument_type=str))
-    pprint.pprint(parser.parse(""" '''this 'is' a "test" trust me''' """))
-    parser.clear_args()
-
-    print('------------Strings: Triple quoted using double quotes------------')
-    parser.add_arg(Argument('a', argument_type=str))
-    pprint.pprint(parser.parse(''' """this 'is' a "test" trust me""" '''))
-    parser.clear_args()
-
-    print('------------Strings: Single quotes and Easy parse type------------')
-    parser.add_arg(Argument('a', argument_type=EPList(EPString())))
-    pprint.pprint(parser.parse("' this is' 'a test ' ' trust me '"))
-    parser.clear_args()
-
     print('\n------------Lists------------')
     parser.add_arg(Argument('a', argument_type=list))
-    pprint.pprint(parser.parse('"this is " a test "  trust" me'))
+    pprint.pprint(parser.parse('"this is " a tests "  trust" me'))
     parser.clear_args()
 
     print('------------Lists: Easy parse type------------')
     parser.add_arg(Argument('a', argument_type=EPList(max_size=3)))
-    pprint.pprint(parser.parse('"this is " a test "  trust" me'))
+    pprint.pprint(parser.parse('"this is " a tests "  trust" me'))
     parser.clear_args()
 
     print('------------Lists: Sub types------------')
@@ -118,27 +79,27 @@ if __name__ == '__main__':
 
     print('------------Lists: Nested easy parse types------------')
     parser.add_arg(Argument('a', argument_type=EPList(sub_args=[EPList(max_size=2)], max_size=3)))
-    pprint.pprint(parser.parse('the ultimate test trust me for once in your life'))
+    pprint.pprint(parser.parse('the ultimate tests trust me for once in your life'))
     parser.clear_args()
 
     print('\n------------Sets------------')
     parser.add_arg(Argument('a', argument_type=set))
-    pprint.pprint(parser.parse('"this is " a test "  trust" me'))
+    pprint.pprint(parser.parse('"this is " a tests "  trust" me'))
     parser.clear_args()
 
     print('------------Sets: Easy parse type------------')
     parser.add_arg(Argument('a', argument_type=EPSet()))
-    pprint.pprint(parser.parse('"this is " a test "  trust" me'))
+    pprint.pprint(parser.parse('"this is " a tests "  trust" me'))
     parser.clear_args()
 
     print('\n------------Frozen sets------------')
     parser.add_arg(Argument('a', argument_type=frozenset))
-    pprint.pprint(parser.parse('"this is " a test "  trust" me'))
+    pprint.pprint(parser.parse('"this is " a tests "  trust" me'))
     parser.clear_args()
 
     print('------------Frozen: Easy parse type------------')
     parser.add_arg(Argument('a', argument_type=EPFrozenSet()))
-    pprint.pprint(parser.parse('"this is " a test "  trust" me'))
+    pprint.pprint(parser.parse('"this is " a tests "  trust" me'))
     parser.clear_args()
 
     print('\n------------Tuples------------')
