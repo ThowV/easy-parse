@@ -20,7 +20,7 @@ class Parser:
         for argument in self.registered_arguments:
             result = parse(parsed_input, argument.argument_type)
 
-            output[argument.name] = result[0]
+            output[argument.dest if argument.dest else argument.name] = result[0]
             parsed_input = result[1]
 
         return output
