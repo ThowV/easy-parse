@@ -181,7 +181,7 @@ def parse_collection(input: str, argument_type: EPCollection) -> list:
             break
 
         # Check if we reached the given collection max
-        if argument_type.max_size and index >= argument_type.max_size - 1:
+        if isinstance(argument_type.max_size, int) and index >= argument_type.max_size - 1:
             break
 
     # Transform the list into whatever type was provided
