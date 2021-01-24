@@ -1,3 +1,4 @@
+from epexceptions import ParsingFailedError, ParsingCollectionFailedError, ParsingRangeFailedError
 from tests.parsing.test_parsing import TestParsing
 from epargument import Argument
 from eptypes import EPRange
@@ -16,7 +17,7 @@ class TestParsingCollectionList(TestParsing):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_range_standard_with_easy_parse_type(self):
+    def test_range_easy_parse_type(self):
         # Assume
         assume = {'a': range(1, 5)}
 

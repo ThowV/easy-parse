@@ -1,19 +1,19 @@
 from typing import Union
 
-from epexceptions import IntUnderMinimumError, IntOverMaximumError, FloatUnderMinimumError, FloatOverMaximumError
+from epexceptions import IntOverMinimumBoundError, IntOverMaximumBoundError, FloatOverMinimumBoundError, FloatOverMaximumBoundError
 from eptypes import EPNumeric
 
 
-def validate_numeric(argument_type: EPNumeric, numeric: Union[int, float, complex]):
+def validate_numeric(argument_type: EPNumeric, parsed_input: Union[int, float, complex]):
     # Check minimum and maximum
-    if isinstance(argument_type.min, int) and numeric < argument_type.min:
-        if isinstance(numeric, int):
-            raise IntUnderMinimumError
-        elif isinstance(numeric, float):
-            raise FloatUnderMinimumError
+    if argument_type.min is not None and parsed_input < argument_type.min:
+        if isinstance(parsed_input, int):
+            raise IntOverMinimumBoundError(parsed_input, argument_type.min)
+        elif isinstance(parsed_input, float):
+            raise FloatOverMinimumBoundError(parsed_input, argument_type.min)
 
-    if isinstance(argument_type.max, int) and numeric > argument_type.max:
-        if isinstance(numeric, int):
-            raise IntOverMaximumError
-        elif isinstance(numeric, float):
-            raise FloatOverMaximumError
+    if argument_type.max is not None and parsed_input > argument_type.max:
+        if isinstance(parsed_input, int):
+            raise IntOverMaximumBoundError(parsed_input, argument_type.max)
+        elif isinstance(parsed_input, float):
+            raise FloatOverMaximumBoundError(parsed_input, argument_type.max)

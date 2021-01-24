@@ -9,46 +9,6 @@ class EPType:
         self.origin = get_origin(argument_type) if get_origin(argument_type) else argument_type
 
 
-# region Inherits EPType
-class EPString(EPType):
-    def __init__(self):
-        super().__init__(str)
-
-
-class EPBool(EPType):
-    def __init__(self):
-        super().__init__(bool)
-
-
-class EPNumeric(EPType):
-    min: Union[int, float]
-    max: Union[int, float]
-
-    def __init__(self, argument_type: type, min: Union[int, float] = None, max: Union[int, float] = None):
-        super().__init__(argument_type)
-
-        self.min = min
-        self.max = max
-
-
-# region Inherits EPNumeric
-class EPInt(EPNumeric):
-    def __init__(self, min: int = None, max: int = None):
-        super().__init__(int, min=min, max=max)
-
-
-class EPFloat(EPNumeric):
-    def __init__(self, min: float = None, max: float = None):
-        super().__init__(float, min=min, max=max)
-
-
-class EPComplex(EPNumeric):
-    def __init__(self):
-        super().__init__(complex)
-# endregion
-# endregion
-
-
 class EPTypeWithSub(EPType):
     sub_args: list
 
@@ -68,12 +28,52 @@ class EPTypeWithSub(EPType):
                     self.sub_args[index] = instantiate(self.sub_args[index])
 
 
-# region Inherits EPTypeWithSub
+# region Other
+class EPString(EPType):
+    def __init__(self):
+        super().__init__(str)
+
+
+class EPBool(EPType):
+    def __init__(self):
+        super().__init__(bool)
+
+
 class EPUnion(EPTypeWithSub):
     def __init__(self, sub_args: list = None):
         super().__init__(Union[int, float], sub_args)
+# endregion
 
 
+# region Numeric
+class EPNumeric(EPType):
+    min: Union[int, float]
+    max: Union[int, float]
+
+    def __init__(self, argument_type: type, min: Union[int, float] = None, max: Union[int, float] = None):
+        super().__init__(argument_type)
+
+        self.min = min
+        self.max = max
+
+
+class EPInt(EPNumeric):
+    def __init__(self, min: int = None, max: int = None):
+        super().__init__(int, min=min, max=max)
+
+
+class EPFloat(EPNumeric):
+    def __init__(self, min: float = None, max: float = None):
+        super().__init__(float, min=min, max=max)
+
+
+class EPComplex(EPNumeric):
+    def __init__(self):
+        super().__init__(complex)
+# endregion
+
+
+# region Collection
 class EPCollection(EPTypeWithSub):
     max_size: int
 
@@ -86,7 +86,6 @@ class EPCollection(EPTypeWithSub):
         self.max_size = max_size
 
 
-# region Inherits EPCollection
 class EPList(EPCollection):
     def __init__(self, sub_args: Union[type, list] = None, max_size: int = None):
         super().__init__(list[str], sub_args, max_size)
@@ -121,7 +120,6 @@ class EPDict(EPCollection):
 class EPRange(EPCollection):
     def __init__(self):
         super().__init__(range, sub_args=[int, int, int], max_size=3)
-# endregion
 # endregion
 
 

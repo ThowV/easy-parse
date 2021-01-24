@@ -2,7 +2,10 @@ from epargument import Argument
 from enum import Enum
 from typing import Union
 
-from epexceptions import IntOverMaximumError, IntUnderMinimumError, FloatUnderMinimumError, FloatOverMaximumError
+from epexceptions import ParsingBoolFailedError, ParsingNumericFailedError, ParsingIntFailedError, \
+    ParsingFloatFailedError, ParsingComplexFailedError, ParsingFailedError, ParsingUnionFailedError, \
+    ParsingCollectionFailedError, ParsingSetFailedError, ParsingFrozenSetFailedError, ParsingTupleFailedError, \
+    ParsingDictFailedError, ParsingRangeFailedError
 from eptypes import EPType, EPCollection, EPTypeWithSub, EPNumeric
 from epvalidator import validate_numeric
 
@@ -120,50 +123,55 @@ def parse_string(input: str) -> list:
 
 
 def parse_boolean(input: str) -> list:
-    input_as_string = parse_string(input)
+    input = parse_string(input)
 
-    if input_as_string[0].lower().strip() == 'true' or input_as_string[0].strip() == '1':
-        return [True, input_as_string[1] if len(input_as_string) > 1 else '']
-    elif input_as_string[0].lower().strip() == 'false' or input_as_string[0].strip() == '0':
-        return [False, input_as_string[1] if len(input_as_string) > 1 else '']
+    if input[0].lower().strip() == 'true' or input[0].strip() == '1':
+        return [True, input[1] if len(input) > 1 else '']
+    elif input[0].lower().strip() == 'false' or input[0].strip() == '0':
+        return [False, input[1] if len(input) > 1 else '']
     else:
-        raise ValueError(f'Error parsing "{input}" since "{input_as_string[0]}" could not be parsed to a boolean.')
+        raise ParsingBoolFailedError(input[0])
 
 
 def parse_numeric(input: str, argument_type: EPNumeric) -> list:
-    input_as_string = parse_string(input)
+    input = parse_string(input)
+    exception = ParsingNumericFailedError
 
     try:
         parsed_input: Union[int, float, complex] = 0
 
         if argument_type.origin == int:
-            parsed_input = int(input_as_string[0])
+            exception = ParsingIntFailedError
+            parsed_input = int(input[0])
         elif argument_type.origin == float:
-            input_as_string[0] = input_as_string[0].replace(',', '.')  # Make sure the formatting is correct
-            parsed_input = float(input_as_string[0])
+            exception = ParsingFloatFailedError
+            input[0] = input[0].replace(',', '.')  # Make sure the formatting is correct
+            parsed_input = float(input[0])
         elif argument_type.origin == complex:
-            parsed_input = complex(input_as_string[0])
+            exception = ParsingComplexFailedError
+            parsed_input = complex(input[0])
 
         validate_numeric(argument_type, parsed_input)
 
-        return [parsed_input, input_as_string[1] if len(input_as_string) > 1 else '']
+        return [parsed_input, input[1] if len(input) > 1 else '']
     except ValueError:
-        raise ValueError(f'Error parsing "{input}" since "{input_as_string[0]}" could not be parsed to a numeric type.')
+        raise exception(input[0])
 
 
 def parse_union(input: str, argument_type: EPTypeWithSub) -> list:
     for sub_atype in argument_type.sub_args:
         try:
             return parse(input, sub_atype)
-        except ValueError:
+        except ParsingFailedError:
             continue
 
-    return ['', input]
+    raise ParsingUnionFailedError(input)
 
 
 def parse_collection(input: str, argument_type: EPCollection) -> list:
     input_unparsed = input
     output = []
+    exception = ParsingCollectionFailedError
 
     # Parse all the sub arguments
     sub_args = argument_type.sub_args
@@ -185,15 +193,23 @@ def parse_collection(input: str, argument_type: EPCollection) -> list:
             break
 
     # Transform the list into whatever type was provided
-    if argument_type.origin == set:
-        output = set(output)
-    elif argument_type.origin == frozenset:
-        output = frozenset(output)
-    elif argument_type.origin == tuple:
-        output = tuple(output)
-    elif argument_type.origin == dict:
-        output = {output[i]: output[i + 1] for i in range(0, len(output), 2)}
-    elif argument_type.origin == range:
-        output = range(*output)
+    try:
+        if argument_type.origin == set:
+            exception = ParsingSetFailedError
+            output = set(output)
+        elif argument_type.origin == frozenset:
+            exception = ParsingFrozenSetFailedError
+            output = frozenset(output)
+        elif argument_type.origin == tuple:
+            exception = ParsingTupleFailedError
+            output = tuple(output)
+        elif argument_type.origin == dict:
+            exception = ParsingDictFailedError
+            output = {output[i]: output[i + 1] for i in range(0, len(output), 2)}
+        elif argument_type.origin == range:
+            exception = ParsingRangeFailedError
+            output = range(*output)
+    except ValueError or IndexError or TypeError:
+        raise exception(str(output))
 
     return [output, input_unparsed if input_unparsed else '']

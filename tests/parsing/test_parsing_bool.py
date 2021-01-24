@@ -1,9 +1,10 @@
+from epexceptions import ParsingFailedError, ParsingBoolFailedError, EPException
 from tests.parsing.test_parsing import TestParsing
 from epargument import Argument
 from eptypes import EPBool
 
 
-class TestParsingString(TestParsing):
+class TestParsingBool(TestParsing):
     def test_bool_standard(self):
         # Assume
         assume = {'a': True, 'b': False, 'c': True, 'd': False}
@@ -19,7 +20,7 @@ class TestParsingString(TestParsing):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_bool_standard_with_easy_parse_type(self):
+    def test_bool_easy_parse_type(self):
         # Assume
         assume = {'a': True, 'b': False, 'c': True, 'd': False}
 
@@ -34,7 +35,7 @@ class TestParsingString(TestParsing):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_bool_numerics(self):
+    def test_bool_standard_numerics(self):
         # Assume
         assume = {'a': True, 'b': False, 'c': True, 'd': False}
 
@@ -48,3 +49,14 @@ class TestParsingString(TestParsing):
 
         # Assert
         self.assertEqual(assume, result)
+
+    # region Exceptions
+    def test_bool_standard_parsing_failed_error(self):
+        # Action
+        self.parser.add_arg(Argument('a', argument_type=bool))
+
+        # Assert
+        self.assertRaises(EPException, self.parser.parse, 'x')
+        self.assertRaises(ParsingFailedError, self.parser.parse, 'x')
+        self.assertRaises(ParsingBoolFailedError, self.parser.parse, 'x')
+    # endregion

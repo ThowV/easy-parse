@@ -1,3 +1,4 @@
+from epexceptions import ParsingFailedError, ParsingFrozenSetFailedError
 from tests.parsing.test_parsing import TestParsing
 from epargument import Argument
 from eptypes import EPFrozenSet
@@ -16,7 +17,7 @@ class TestParsingCollectionList(TestParsing):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_frozenset_standard_with_easy_parse_type(self):
+    def test_frozenset_easy_parse_type(self):
         # Assume
         assume = {'a': {'this is ', 'a', 'test'}}
 
@@ -28,7 +29,7 @@ class TestParsingCollectionList(TestParsing):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_frozenset_with_sub_type(self):
+    def test_frozenset_standard_sub_typed(self):
         # Assume
         assume = {'a': {1, 2, 3}}
 

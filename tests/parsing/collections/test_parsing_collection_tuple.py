@@ -18,7 +18,7 @@ class TestParsingCollectionList(TestParsing):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_list_standard_with_easy_parse_type(self):
+    def test_list_easy_parse_type(self):
         # Assume
         assume = {'a': ('string1', 2, 3.3, True)}
 

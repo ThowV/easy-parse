@@ -4,7 +4,7 @@ from eptypes import EPString
 
 
 class TestParsingString(TestParsing):
-    def test_string_no_quotes(self):
+    def test_string_standard_no_quotes(self):
         # Assume
         assume = {'a': 'this', 'b': 'is', 'c': 'a', 'd': 'test', 'e': 'trust', 'f': 'me'}
 
@@ -21,7 +21,7 @@ class TestParsingString(TestParsing):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_string_no_quotes_with_easy_parse_type(self):
+    def test_string_easy_parse_type_no_quotes(self):
         # Assume
         assume = {'a': 'this', 'b': 'is', 'c': 'a', 'd': 'test', 'e': 'trust', 'f': 'me'}
 
@@ -38,7 +38,7 @@ class TestParsingString(TestParsing):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_string_single_quotes(self):
+    def test_string_standard_single_quotes(self):
         # Assume
         assume = {'a': ' this is', 'b': 'a test ', 'c': ' trust me '}
 
@@ -52,7 +52,7 @@ class TestParsingString(TestParsing):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_string_double_quotes(self):
+    def test_string_standard_double_quotes(self):
         # Assume
         assume = {'a': ' this is', 'b': 'a test ', 'c': ' trust me '}
 
@@ -66,7 +66,7 @@ class TestParsingString(TestParsing):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_string_triple_quoted_using_single_quotes(self):
+    def test_string_standard_triple_quoted_using_single_quotes(self):
         # Assume
         assume = {'a': 'this \'is\' a "test" trust me'}
 
@@ -78,7 +78,7 @@ class TestParsingString(TestParsing):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_string_triple_quoted_using_double_quotes(self):
+    def test_string_standard_triple_quoted_using_double_quotes(self):
         # Assume
         assume = {'a': 'this \'is\' a "test" trust me'}
 

@@ -1,11 +1,13 @@
-from epexceptions import NumericUnderMinimumError, IntUnderMinimumError, FloatUnderMinimumError, \
-    NumericOverMaximumError, IntOverMaximumError, FloatOverMaximumError
+from epexceptions import NumericOverMinimumBoundError, IntOverMinimumBoundError, FloatOverMinimumBoundError, \
+    NumericOverMaximumBoundError, IntOverMaximumBoundError, FloatOverMaximumBoundError, ParsingNumericFailedError, \
+    ParsingIntFailedError, ParsingFloatFailedError, ParsingComplexFailedError, NumericOverBoundError, \
+    ValidationFailedError, EPException
 from tests.parsing.test_parsing import TestParsing
 from epargument import Argument
 from eptypes import EPInt, EPFloat, EPComplex
 
 
-class TestParsingString(TestParsing):
+class TestParsingNumeric(TestParsing):
     def test_numeric_standard(self):
         # Assume
         assume = {'a': 1, 'b': 2.2, 'c': 3.3, 'd': (4+4j), 'e': 5.5}
@@ -22,7 +24,7 @@ class TestParsingString(TestParsing):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_numeric_standard_easy_parse_type(self):
+    def test_numeric_easy_parse_type(self):
         # Assume
         assume = {'a': 1, 'b': 2.2, 'c': 3.3, 'd': (4+4j), 'e': 5.5}
 
@@ -38,48 +40,81 @@ class TestParsingString(TestParsing):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_numeric_standard_with_numeric_under_minimum_error(self):
+    # region Exceptions
+    # region Exceptions: ParsingNumericFailedError
+    def test_int_parsing_failed_error(self):
+        # Action
+        self.parser.add_arg(Argument('a', argument_type=int))
+
+        # Assert
+        self.assertRaises(ParsingNumericFailedError, self.parser.parse, 'x')
+        self.assertRaises(ParsingIntFailedError, self.parser.parse, 'x')
+
+    def test_float_parsing_failed_error(self):
+        # Action
+        self.parser.add_arg(Argument('a', argument_type=float))
+
+        # Assert
+        self.assertRaises(ParsingNumericFailedError, self.parser.parse, 'x')
+        self.assertRaises(ParsingFloatFailedError, self.parser.parse, 'x')
+
+    def test_complex_parsing_failed_error(self):
+        # Action
+        self.parser.add_arg(Argument('a', argument_type=complex))
+
+        # Assert
+        self.assertRaises(ParsingNumericFailedError, self.parser.parse, 'x')
+        self.assertRaises(ParsingComplexFailedError, self.parser.parse, 'x')
+    # endregion
+
+    # region Exceptions: NumericOverBoundError
+    # region Exceptions: NumericOverBoundError -> NumericOverMinimumBoundError
+    def test_int_standard_over_minimum_bound_error(self):
         # Action
         self.parser.add_arg(Argument('a', argument_type=EPInt(min=10)))
 
         # Assert
-        with self.assertRaises(NumericUnderMinimumError):
-            self.parser.parse('1')
+        self.assertRaises(EPException, self.parser.parse, '1')
+        self.assertRaises(ValidationFailedError, self.parser.parse, '1')
+        self.assertRaises(NumericOverBoundError, self.parser.parse, '1')
+        self.assertRaises(NumericOverMinimumBoundError, self.parser.parse, '1')
+        self.assertRaises(IntOverMinimumBoundError, self.parser.parse, '1')
 
-        with self.assertRaises(IntUnderMinimumError):
-            self.parser.parse('1')
-
+    def test_float_standard_over_minimum_bound_error(self):
         # Action
         self.parser.clear_args()
         self.parser.add_arg(Argument('a', argument_type=EPFloat(min=10)))
 
         # Assert
-        with self.assertRaises(NumericUnderMinimumError):
-            self.parser.parse('1.1')
+        self.assertRaises(EPException, self.parser.parse, '1.1')
+        self.assertRaises(ValidationFailedError, self.parser.parse, '1.1')
+        self.assertRaises(NumericOverBoundError, self.parser.parse, '1.1')
+        self.assertRaises(NumericOverMinimumBoundError, self.parser.parse, '1.1')
+        self.assertRaises(FloatOverMinimumBoundError, self.parser.parse, '1.1')
+    # endregion
 
-        with self.assertRaises(FloatUnderMinimumError):
-            self.parser.parse('1.1')
-
-    def test_numeric_standard_with_numeric_over_maximum_error(self):
+    # region Exceptions: NumericOverBoundError -> NumericOverMaximumError
+    def test_int_standard_over_maximum_bound_error(self):
         # Action
         self.parser.add_arg(Argument('a', argument_type=EPInt(max=0)))
 
         # Assert
-        with self.assertRaises(NumericOverMaximumError):
-            self.parser.parse('1')
+        self.assertRaises(EPException, self.parser.parse, '1')
+        self.assertRaises(ValidationFailedError, self.parser.parse, '1')
+        self.assertRaises(NumericOverBoundError, self.parser.parse, '1')
+        self.assertRaises(NumericOverMaximumBoundError, self.parser.parse, '1')
+        self.assertRaises(IntOverMaximumBoundError, self.parser.parse, '1')
 
-        with self.assertRaises(IntOverMaximumError):
-            self.parser.parse('1')
-
+    def test_float_standard_over_maximum_bound_error(self):
         # Action
         self.parser.clear_args()
         self.parser.add_arg(Argument('a', argument_type=EPFloat(max=0)))
 
         # Assert
-        with self.assertRaises(NumericOverMaximumError):
-            self.parser.parse('1.1')
-
-        with self.assertRaises(FloatOverMaximumError):
-            self.parser.parse('1.1')
-
-
+        self.assertRaises(EPException, self.parser.parse, '1.1')
+        self.assertRaises(ValidationFailedError, self.parser.parse, '1.1')
+        self.assertRaises(NumericOverBoundError, self.parser.parse, '1.1')
+        self.assertRaises(NumericOverMaximumBoundError, self.parser.parse, '1.1')
+        self.assertRaises(FloatOverMaximumBoundError, self.parser.parse, '1.1')
+    # endregion
+    # endregion

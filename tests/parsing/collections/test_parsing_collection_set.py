@@ -16,7 +16,7 @@ class TestParsingCollectionList(TestParsing):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_set_standard_with_easy_parse_type(self):
+    def test_set_easy_parse_type(self):
         # Assume
         assume = {'a': {'this is ', 'test', 'a'}}
 
@@ -28,7 +28,7 @@ class TestParsingCollectionList(TestParsing):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_set_with_sub_type(self):
+    def test_set_standard_sub_typed(self):
         # Assume
         assume = {'a': {1, 2, 3}}
 

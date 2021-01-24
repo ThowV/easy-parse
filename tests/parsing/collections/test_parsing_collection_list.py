@@ -17,7 +17,7 @@ class TestParsingCollectionList(TestParsing):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_list_standard_with_easy_parse_type(self):
+    def test_list_easy_parse_type(self):
         # Assume
         assume = {'a': ['this is ', 'a', 'test']}
 
@@ -29,7 +29,7 @@ class TestParsingCollectionList(TestParsing):
         # Assert
         self.assertEqual(assume, result)
 
-    def test_list_with_sub_type(self):
+    def test_list_standard_sub_typed(self):
         # Assume
         assume = {'a': [1, 2, 3]}
 
