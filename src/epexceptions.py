@@ -15,6 +15,14 @@ class EPParsingFailedError(EPException):
         return f'Could not parse {self.value} to {self.to}.'
 
 
+class EPParsingOperationFailedError(EPParsingFailedError):
+    def __init__(self, value: str):
+        self.value = value
+
+    def __str__(self) -> str:
+        return f'Could not perform operation on {self.value}.'
+
+
 class EPParsingStringFailedError(EPParsingFailedError):
     def __init__(self, value: str):
         super().__init__(value, str)

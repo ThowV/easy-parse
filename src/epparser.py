@@ -5,7 +5,7 @@ from typing import Union
 from epexceptions import EPParsingBoolFailedError, EPParsingNumericFailedError, EPParsingIntFailedError, \
     EPParsingFloatFailedError, EPParsingComplexFailedError, EPParsingFailedError, EPParsingUnionFailedError, \
     EPParsingCollectionFailedError, EPParsingSetFailedError, EPParsingFrozenSetFailedError, EPParsingTupleFailedError, \
-    EPParsingDictFailedError, EPParsingRangeFailedError
+    EPParsingDictFailedError, EPParsingRangeFailedError, EPParsingOperationFailedError
 from eptypes import EPType, EPCollection, EPTypeWithSub, EPNumeric
 from epvalidator import validate_numeric, validate_collection
 
@@ -20,16 +20,27 @@ class EPParser:
         self.registered_arguments = []
 
     def parse(self, input: str) -> dict:
-        output: dict = {}
-        parsed_input = input
+        input_parsed: dict = {}
+        input_unparsed = input
         
         for argument in self.registered_arguments:
-            result = parse(parsed_input, argument.argument_type)
+            # Get result
+            result = parse(input_unparsed, argument.argument_type)
 
-            output[argument.dest if argument.dest else argument.name] = result[0]
-            parsed_input = result[1]
+            # Determine destination
+            argument_dest = argument.dest if argument.dest else argument.name
 
-        return output
+            # Apply operation
+            if argument.operation:
+                try:
+                    result[0] = argument.operation(result[0])
+                except Exception as e:
+                    raise EPParsingOperationFailedError(result[0]) from e
+
+            input_parsed[argument_dest] = argument.operation(result[0]) if argument.operation else result[0]
+            input_unparsed = result[1]
+
+        return input_parsed
 
 
 class StringType(Enum):
