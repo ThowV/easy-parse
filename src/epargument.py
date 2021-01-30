@@ -3,7 +3,7 @@ from typing import Union
 from eptypes import EPType, instantiate
 
 
-class Argument:
+class EPArgument:
     name: str
     argument_type: EPType
     default: type

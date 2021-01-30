@@ -75,51 +75,47 @@ class EPComplex(EPNumeric):
 
 # region Collection
 class EPCollection(EPTypeWithSub):
+    min_size: int
     max_size: int
 
-    def __init__(self, argument_type: type, sub_args: list = None, max_size: int = None):
+    def __init__(self, argument_type: type, sub_args: list = None, min_size: int = None, max_size: int = None):
         super().__init__(argument_type, sub_args)
 
         if not self.sub_args:  # If there are no sub arguments provided
             self.sub_args = [instantiate(str)]
 
+        self.min_size = min_size
         self.max_size = max_size
 
 
 class EPList(EPCollection):
-    def __init__(self, sub_args: Union[type, list] = None, max_size: int = None):
-        super().__init__(list[str], sub_args, max_size)
+    def __init__(self, sub_args: Union[type, list] = None, min_size: int = None, max_size: int = None):
+        super().__init__(list[str], sub_args, min_size, max_size)
 
 
 class EPSet(EPCollection):
-    def __init__(self, sub_args: Union[type, list] = None, max_size: int = None):
-        super().__init__(set[str], sub_args, max_size)
+    def __init__(self, sub_args: Union[type, list] = None, min_size: int = None, max_size: int = None):
+        super().__init__(set[str], sub_args, min_size, max_size)
 
 
 class EPFrozenSet(EPCollection):
-    def __init__(self, sub_args: Union[type, list] = None, max_size: int = None):
-        super().__init__(frozenset[str], sub_args, max_size)
+    def __init__(self, sub_args: Union[type, list] = None, min_size: int = None, max_size: int = None):
+        super().__init__(frozenset[str], sub_args, min_size, max_size)
 
 
 class EPTuple(EPCollection):
-    def __init__(self, sub_args: Union[type, list] = None, max_size: int = None):
-        if sub_args and max_size:
-            max_size *= len(sub_args)
-
-        super().__init__(tuple[str], sub_args, max_size)
+    def __init__(self, sub_args: Union[type, list] = None, min_size: int = None, max_size: int = None):
+        super().__init__(tuple[str], sub_args, min_size, max_size)
 
 
 class EPDict(EPCollection):
-    def __init__(self, sub_args: Union[type, list] = None, max_size: int = None):
-        if max_size:
-            max_size *= 2
-
-        super().__init__(dict[str, str], sub_args, max_size)
+    def __init__(self, sub_args: Union[type, list] = None, min_size: int = None, max_size: int = None):
+        super().__init__(dict[str, str], sub_args, min_size, max_size)
 
 
 class EPRange(EPCollection):
     def __init__(self):
-        super().__init__(range, sub_args=[int, int, int], max_size=3)
+        super().__init__(range, sub_args=[int, int, int])
 # endregion
 
 
@@ -129,23 +125,23 @@ def instantiate(argument_type: type) -> EPType:
 
     try:
         type_converting_dict = {
-            # type :    [EPType, Pass sub args]
-            str:        [EPString, False],
+            # type :    [EPType,        Pass sub args]
+            str:        [EPString,      False],
 
-            bool:       [EPBool, False],
+            bool:       [EPBool,        False],
 
-            int:        [EPInt, False],
-            float:      [EPFloat, False],
-            complex:    [EPComplex, False],
+            int:        [EPInt,         False],
+            float:      [EPFloat,       False],
+            complex:    [EPComplex,     False],
 
-            Union: [EPUnion, True],
+            Union:      [EPUnion,       True],
 
-            list:       [EPList, True],
-            set:        [EPSet, True],
-            frozenset:  [EPFrozenSet, True],
-            tuple:      [EPTuple, True],
-            dict:       [EPDict, True],
-            range:      [EPRange, False],
+            list:       [EPList,        True],
+            set:        [EPSet,         True],
+            frozenset:  [EPFrozenSet,   True],
+            tuple:      [EPTuple,       True],
+            dict:       [EPDict,        True],
+            range:      [EPRange,       False],
         }
 
         result = type_converting_dict[origin]

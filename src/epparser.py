@@ -1,19 +1,19 @@
-from epargument import Argument
+from epargument import EPArgument
 from enum import Enum
 from typing import Union
 
-from epexceptions import ParsingBoolFailedError, ParsingNumericFailedError, ParsingIntFailedError, \
-    ParsingFloatFailedError, ParsingComplexFailedError, ParsingFailedError, ParsingUnionFailedError, \
-    ParsingCollectionFailedError, ParsingSetFailedError, ParsingFrozenSetFailedError, ParsingTupleFailedError, \
-    ParsingDictFailedError, ParsingRangeFailedError
+from epexceptions import EPParsingBoolFailedError, EPParsingNumericFailedError, EPParsingIntFailedError, \
+    EPParsingFloatFailedError, EPParsingComplexFailedError, EPParsingFailedError, EPParsingUnionFailedError, \
+    EPParsingCollectionFailedError, EPParsingSetFailedError, EPParsingFrozenSetFailedError, EPParsingTupleFailedError, \
+    EPParsingDictFailedError, EPParsingRangeFailedError
 from eptypes import EPType, EPCollection, EPTypeWithSub, EPNumeric
-from epvalidator import validate_numeric
+from epvalidator import validate_numeric, validate_collection
 
 
-class Parser:
-    registered_arguments: list[Argument] = []
+class EPParser:
+    registered_arguments: list[EPArgument] = []
 
-    def add_arg(self, argument: Argument):
+    def add_arg(self, argument: EPArgument):
         self.registered_arguments.append(argument)
 
     def clear_args(self):
@@ -130,48 +130,49 @@ def parse_boolean(input: str) -> list:
     elif input[0].lower().strip() == 'false' or input[0].strip() == '0':
         return [False, input[1] if len(input) > 1 else '']
     else:
-        raise ParsingBoolFailedError(input[0])
+        raise EPParsingBoolFailedError(input[0])
 
 
 def parse_numeric(input: str, argument_type: EPNumeric) -> list:
     input = parse_string(input)
-    exception = ParsingNumericFailedError
+    exception = EPParsingNumericFailedError
 
     try:
         parsed_input: Union[int, float, complex] = 0
 
         if argument_type.origin == int:
-            exception = ParsingIntFailedError
+            exception = EPParsingIntFailedError
             parsed_input = int(input[0])
         elif argument_type.origin == float:
-            exception = ParsingFloatFailedError
+            exception = EPParsingFloatFailedError
             input[0] = input[0].replace(',', '.')  # Make sure the formatting is correct
             parsed_input = float(input[0])
         elif argument_type.origin == complex:
-            exception = ParsingComplexFailedError
+            exception = EPParsingComplexFailedError
             parsed_input = complex(input[0])
-
-        validate_numeric(argument_type, parsed_input)
-
-        return [parsed_input, input[1] if len(input) > 1 else '']
     except ValueError:
         raise exception(input[0])
+
+    # Validate the numeric
+    validate_numeric(argument_type, parsed_input)
+
+    return [parsed_input, input[1] if len(input) > 1 else '']
 
 
 def parse_union(input: str, argument_type: EPTypeWithSub) -> list:
     for sub_atype in argument_type.sub_args:
         try:
             return parse(input, sub_atype)
-        except ParsingFailedError:
+        except EPParsingFailedError:
             continue
 
-    raise ParsingUnionFailedError(input)
+    raise EPParsingUnionFailedError(input)
 
 
 def parse_collection(input: str, argument_type: EPCollection) -> list:
     input_unparsed = input
     output = []
-    exception = ParsingCollectionFailedError
+    exception = EPParsingCollectionFailedError
 
     # Parse all the sub arguments
     sub_args = argument_type.sub_args
@@ -188,28 +189,27 @@ def parse_collection(input: str, argument_type: EPCollection) -> list:
         if not input_unparsed:
             break
 
-        # Check if we reached the given collection max
-        if isinstance(argument_type.max_size, int) and index >= argument_type.max_size - 1:
-            break
-
     # Transform the list into whatever type was provided
     try:
         if argument_type.origin == set:
-            exception = ParsingSetFailedError
+            exception = EPParsingSetFailedError
             output = set(output)
         elif argument_type.origin == frozenset:
-            exception = ParsingFrozenSetFailedError
+            exception = EPParsingFrozenSetFailedError
             output = frozenset(output)
         elif argument_type.origin == tuple:
-            exception = ParsingTupleFailedError
+            exception = EPParsingTupleFailedError
             output = tuple(output)
         elif argument_type.origin == dict:
-            exception = ParsingDictFailedError
+            exception = EPParsingDictFailedError
             output = {output[i]: output[i + 1] for i in range(0, len(output), 2)}
         elif argument_type.origin == range:
-            exception = ParsingRangeFailedError
+            exception = EPParsingRangeFailedError
             output = range(*output)
     except ValueError or IndexError or TypeError:
         raise exception(str(output))
+
+    # Validate the collection
+    validate_collection(argument_type, output)
 
     return [output, input_unparsed if input_unparsed else '']

@@ -1,16 +1,15 @@
-from epexceptions import ParsingFailedError, ParsingCollectionFailedError, ParsingRangeFailedError
 from tests.parsing.test_parsing import TestParsing
-from epargument import Argument
+from epargument import EPArgument
 from eptypes import EPRange
 
 
-class TestParsingCollectionList(TestParsing):
+class TestParsingCollectionRange(TestParsing):
     def test_range_standard(self):
         # Assume
         assume = {'a': range(0, 20, 2)}
 
         # Action
-        self.parser.add_arg(Argument('a', argument_type=range))
+        self.parser.add_arg(EPArgument('a', argument_type=range))
 
         result = self.parser.parse('0 20 2')
 
@@ -22,7 +21,7 @@ class TestParsingCollectionList(TestParsing):
         assume = {'a': range(1, 5)}
 
         # Action
-        self.parser.add_arg(Argument('a', argument_type=EPRange()))
+        self.parser.add_arg(EPArgument('a', argument_type=EPRange()))
 
         result = self.parser.parse('1 5')
 
