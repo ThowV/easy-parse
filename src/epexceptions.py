@@ -5,6 +5,23 @@ class EPException(Exception):
     pass
 
 
+# region EPParserSetupFailedError
+class EPParserSetupFailedError(EPException):
+    def __str__(self) -> str:
+        return 'The parser encountered an error during setup.'
+
+
+class EPDuplicateArgumentError(EPParserSetupFailedError):
+    def __str__(self) -> str:
+        return 'Encountered a duplicate argument when setting up the parser.'
+
+
+class EPMandatoryArgumentInvalidPositionError(EPParserSetupFailedError):
+    def __str__(self) -> str:
+        return 'Encountered a mandatory argument after an optional argument when setting up the parser.'
+# endregion
+
+
 # region EPParsingFailedError
 class EPParsingFailedError(EPException):
     def __init__(self, value: str, to: Union[type, str], absolute: bool = False):

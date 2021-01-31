@@ -5,15 +5,28 @@ from typing import Union
 from epexceptions import EPParsingBoolFailedError, EPParsingNumericFailedError, EPParsingIntFailedError, \
     EPParsingFloatFailedError, EPParsingComplexFailedError, EPParsingFailedError, EPParsingUnionFailedError, \
     EPParsingCollectionFailedError, EPParsingSetFailedError, EPParsingFrozenSetFailedError, EPParsingTupleFailedError, \
-    EPParsingDictFailedError, EPParsingRangeFailedError, EPParsingOperationFailedError
+    EPParsingDictFailedError, EPParsingRangeFailedError, EPParsingOperationFailedError, \
+    EPMandatoryArgumentInvalidPositionError, EPDuplicateArgumentError
 from eptypes import EPType, EPCollection, EPTypeWithSub, EPNumeric
 from epvalidator import validate_numeric, validate_collection
 
 
 class EPParser:
     registered_arguments: list[EPArgument] = []
+    optional_expected: bool = False
 
     def add_arg(self, argument: EPArgument):
+        # Check if the argument is already present
+        for registered_argument in self.registered_arguments:
+            if registered_argument.identifiers[0] == argument.identifiers[0]:
+                raise EPDuplicateArgumentError()
+
+        # Check if the argument is optional
+        if argument.optional is True:
+            self.optional_expected = True
+        elif argument.optional is False and self.optional_expected is True:
+            raise EPMandatoryArgumentInvalidPositionError()
+
         self.registered_arguments.append(argument)
 
     def clear_args(self):
@@ -27,9 +40,6 @@ class EPParser:
             # Get result
             result = parse(input_unparsed, argument.argument_type)
 
-            # Determine destination
-            argument_dest = argument.dest if argument.dest else argument.name
-
             # Apply operation
             if argument.operation:
                 try:
@@ -37,7 +47,7 @@ class EPParser:
                 except Exception as e:
                     raise EPParsingOperationFailedError(result[0]) from e
 
-            input_parsed[argument_dest] = argument.operation(result[0]) if argument.operation else result[0]
+            input_parsed[argument.destination] = result[0]
             input_unparsed = result[1]
 
         return input_parsed
