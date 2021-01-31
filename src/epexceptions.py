@@ -16,9 +16,14 @@ class EPDuplicateArgumentError(EPParserSetupFailedError):
         return 'Encountered a duplicate argument when setting up the parser.'
 
 
-class EPMandatoryArgumentInvalidPositionError(EPParserSetupFailedError):
+class EPOptionalArgumentExpectedError(EPParserSetupFailedError):
     def __str__(self) -> str:
         return 'Encountered a mandatory argument after an optional argument when setting up the parser.'
+
+
+class EPFlagArgumentExpectedError(EPParserSetupFailedError):
+    def __str__(self) -> str:
+        return 'Encountered a standard argument after a flag argument when setting up the parser.'
 # endregion
 
 

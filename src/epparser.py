@@ -6,7 +6,8 @@ from epexceptions import EPParseToBoolFailedError, EPParseToNumericFailedError, 
     EPParseToFloatFailedError, EPParseToComplexFailedError, EPParsingFailedError, EPParseToUnionFailedError, \
     EPParseToCollectionFailedError, EPParseToSetFailedError, EPParseToFrozenSetFailedError, EPParseToTupleFailedError, \
     EPParseToDictFailedError, EPParseToRangeFailedError, EPParsingOperationFailedError, \
-    EPMandatoryArgumentInvalidPositionError, EPDuplicateArgumentError, EPMandatoryArgumentBlankError
+    EPOptionalArgumentExpectedError, EPDuplicateArgumentError, EPMandatoryArgumentBlankError, \
+    EPFlagArgumentExpectedError
 from eptypes import EPType, EPCollection, EPTypeWithSub, EPNumeric
 from epvalidator import validate_numeric, validate_collection
 
@@ -14,6 +15,7 @@ from epvalidator import validate_numeric, validate_collection
 class EPParser:
     registered_arguments: list[EPArgument] = []
     optional_expected: bool = False
+    flag_expected: bool = False
 
     def add_arg(self, argument: EPArgument):
         # Check if the argument is already present
@@ -24,8 +26,14 @@ class EPParser:
         # Check if the argument is optional
         if argument.optional is True:
             self.optional_expected = True
-        elif argument.optional is False and self.optional_expected is True:
-            raise EPMandatoryArgumentInvalidPositionError()
+        elif self.optional_expected is True:
+            raise EPOptionalArgumentExpectedError()
+
+        # Check if the argument must be a flag and not a name
+        if argument.identifiers[0].startswith('-'):
+            self.flag_expected = True
+        elif self.flag_expected is True:
+            raise EPFlagArgumentExpectedError()
 
         self.registered_arguments.append(argument)
 

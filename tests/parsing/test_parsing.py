@@ -2,7 +2,8 @@ import unittest
 
 from epargument import EPArgument
 from epexceptions import EPException, EPParsingFailedError, EPParsingOperationFailedError, EPParserSetupFailedError, \
-    EPMandatoryArgumentInvalidPositionError, EPDuplicateArgumentError, EPMandatoryArgumentBlankError
+    EPOptionalArgumentExpectedError, EPDuplicateArgumentError, EPMandatoryArgumentBlankError, \
+    EPFlagArgumentExpectedError
 from epparser import EPParser
 
 
@@ -68,10 +69,9 @@ class TestParsing(unittest.TestCase):
         # Assert
         self.assertRaises(EPException, self.parser.add_arg, EPArgument('a', argument_type=int))
         self.assertRaises(EPParserSetupFailedError, self.parser.add_arg, EPArgument('a', argument_type=int))
-        self.assertRaises(EPDuplicateArgumentError, self.parser.add_arg,
-                          EPArgument('a', argument_type=int))
+        self.assertRaises(EPDuplicateArgumentError, self.parser.add_arg, EPArgument('a', argument_type=int))
 
-    def test_mandatory_argument_invalid_position_error(self):
+    def test_optional_argument_expected_error(self):
         # Action
         self.parser.add_arg(EPArgument('a', argument_type=int))
         self.parser.add_arg(EPArgument('b', argument_type=int))
@@ -80,8 +80,19 @@ class TestParsing(unittest.TestCase):
         # Assert
         self.assertRaises(EPException, self.parser.add_arg, EPArgument('d', argument_type=int))
         self.assertRaises(EPParserSetupFailedError, self.parser.add_arg, EPArgument('d', argument_type=int))
-        self.assertRaises(EPMandatoryArgumentInvalidPositionError, self.parser.add_arg,
-                          EPArgument('d', argument_type=int))
+        self.assertRaises(EPOptionalArgumentExpectedError, self.parser.add_arg, EPArgument('d', argument_type=int))
+
+    def test_flag_argument_expected_error(self):
+        # Action
+        self.parser.add_arg(EPArgument('a', argument_type=int))
+        self.parser.add_arg(EPArgument('-b', argument_type=int))
+
+        # Assert
+        self.assertRaises(EPException, self.parser.add_arg, EPArgument('c', argument_type=int, optional=True))
+        self.assertRaises(EPParserSetupFailedError, self.parser.add_arg,
+                          EPArgument('c', argument_type=int, optional=True))
+        self.assertRaises(EPFlagArgumentExpectedError, self.parser.add_arg,
+                          EPArgument('c', argument_type=int, optional=True))
     # endregion
 
     # region Exceptions: EPParsingFailedError
