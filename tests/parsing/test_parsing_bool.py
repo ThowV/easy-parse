@@ -1,4 +1,4 @@
-from epexceptions import EPParsingFailedError, EPParsingBoolFailedError, EPException
+from epexceptions import EPParsingFailedError, EPParseToBoolFailedError, EPException, EPParseToTypeFailedError
 from tests.parsing.test_parsing import TestParsing
 from epargument import EPArgument
 from eptypes import EPBool
@@ -51,12 +51,13 @@ class TestParsingBool(TestParsing):
         self.assertEqual(assume, result)
 
     # region Exceptions
-    def test_bool_parsing_failed_error(self):
+    def test_parse_to_bool_failed_error(self):
         # Action
         self.parser.add_arg(EPArgument('a', argument_type=bool))
 
         # Assert
         self.assertRaises(EPException, self.parser.parse, 'x')
         self.assertRaises(EPParsingFailedError, self.parser.parse, 'x')
-        self.assertRaises(EPParsingBoolFailedError, self.parser.parse, 'x')
+        self.assertRaises(EPParseToTypeFailedError, self.parser.parse, 'x')
+        self.assertRaises(EPParseToBoolFailedError, self.parser.parse, 'x')
     # endregion

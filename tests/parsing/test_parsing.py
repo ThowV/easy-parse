@@ -2,7 +2,7 @@ import unittest
 
 from epargument import EPArgument
 from epexceptions import EPException, EPParsingFailedError, EPParsingOperationFailedError, EPParserSetupFailedError, \
-    EPMandatoryArgumentInvalidPositionError, EPDuplicateArgumentError
+    EPMandatoryArgumentInvalidPositionError, EPDuplicateArgumentError, EPMandatoryArgumentBlankError
 from epparser import EPParser
 
 
@@ -83,6 +83,17 @@ class TestParsing(unittest.TestCase):
         self.assertRaises(EPMandatoryArgumentInvalidPositionError, self.parser.add_arg,
                           EPArgument('d', argument_type=int))
     # endregion
+
+    # region Exceptions: EPParsingFailedError
+    def test_mandatory_argument_blank_error(self):
+        # Action
+        self.parser.add_arg(EPArgument('a', argument_type=int))
+        self.parser.add_arg(EPArgument('b', argument_type=int))
+
+        # Assert
+        self.assertRaises(EPException, self.parser.parse, '10')
+        self.assertRaises(EPParsingFailedError, self.parser.parse, '10')
+        self.assertRaises(EPMandatoryArgumentBlankError, self.parser.parse, '10')
 
     def test_parsing_operation_error(self):
         # Action

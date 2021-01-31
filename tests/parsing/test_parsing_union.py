@@ -1,6 +1,6 @@
 from typing import Union
 
-from epexceptions import EPParsingFailedError, EPParsingUnionFailedError, EPException
+from epexceptions import EPParsingFailedError, EPParseToUnionFailedError, EPException, EPParseToTypeFailedError
 from tests.parsing.test_parsing import TestParsing
 from epargument import EPArgument
 from eptypes import EPUnion
@@ -50,12 +50,13 @@ class TestParsingUnion(TestParsing):
         self.assertEqual(assume, result)
 
     # region Exceptions
-    def test_union_parsing_failed_error(self):
+    def test_parse_to_union_failed_error(self):
         # Action
         self.parser.add_arg(EPArgument('a', argument_type=Union[int, complex]))
 
         # Assert
         self.assertRaises(EPException, self.parser.parse, 'x')
         self.assertRaises(EPParsingFailedError, self.parser.parse, 'x')
-        self.assertRaises(EPParsingUnionFailedError, self.parser.parse, 'x')
+        self.assertRaises(EPParseToTypeFailedError, self.parser.parse, 'x')
+        self.assertRaises(EPParseToUnionFailedError, self.parser.parse, 'x')
     # endregion

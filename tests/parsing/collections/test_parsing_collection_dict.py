@@ -1,6 +1,6 @@
-from epexceptions import EPParsingFailedError, EPParsingDictFailedError, EPParsingCollectionFailedError, EPException, \
+from epexceptions import EPParsingFailedError, EPParseToDictFailedError, EPParseToCollectionFailedError, EPException, \
     EPValidationFailedError, EPValueOverBoundError, EPCollectionOverBoundError, EPDictOverBoundError, \
-    EPDictOverMinimumBoundError, EPDictOverMaximumBoundError
+    EPDictOverMinimumBoundError, EPDictOverMaximumBoundError, EPParseToTypeFailedError
 from tests.parsing.test_parsing import TestParsing
 from epargument import EPArgument
 from eptypes import EPDict
@@ -44,15 +44,16 @@ class TestParsingCollectionDict(TestParsing):
         self.assertEqual(assume, result)
 
     # region Exceptions
-    def test_dict_parsing_failed_error(self):
+    def test_parse_to_dict_failed_error(self):
         # Action
         self.parser.add_arg(EPArgument('a', argument_type=dict[str, int]))
 
         # Assert
         self.assertRaises(EPException, self.parser.parse, 'key1 2 key3 4 key5')
         self.assertRaises(EPParsingFailedError, self.parser.parse, 'key1 2 key3 4 key5')
-        self.assertRaises(EPParsingCollectionFailedError, self.parser.parse, 'key1 2 key3 4 key5')
-        self.assertRaises(EPParsingDictFailedError, self.parser.parse, 'key1 2 key3 4 key5')
+        self.assertRaises(EPParseToTypeFailedError, self.parser.parse, 'key1 2 key3 4 key5')
+        self.assertRaises(EPParseToCollectionFailedError, self.parser.parse, 'key1 2 key3 4 key5')
+        self.assertRaises(EPParseToDictFailedError, self.parser.parse, 'key1 2 key3 4 key5')
 
     def test_dict_over_minimum_bound_error(self):
         # Action

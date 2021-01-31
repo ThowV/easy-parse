@@ -1,7 +1,8 @@
 from epexceptions import EPIntOverMinimumBoundError, EPFloatOverMinimumBoundError, \
-    EPIntOverMaximumBoundError, EPFloatOverMaximumBoundError, EPParsingNumericFailedError, \
-    EPParsingIntFailedError, EPParsingFloatFailedError, EPParsingComplexFailedError, EPNumericOverBoundError, \
-    EPValidationFailedError, EPException, EPValueOverBoundError, EPIntOverBoundError, EPFloatOverBoundError
+    EPIntOverMaximumBoundError, EPFloatOverMaximumBoundError, EPParseToNumericFailedError, \
+    EPParseToIntFailedError, EPParseToFloatFailedError, EPParseToComplexFailedError, EPNumericOverBoundError, \
+    EPValidationFailedError, EPException, EPValueOverBoundError, EPIntOverBoundError, EPFloatOverBoundError, \
+    EPParsingFailedError, EPParseToTypeFailedError
 from tests.parsing.test_parsing import TestParsing
 from epargument import EPArgument
 from eptypes import EPInt, EPFloat, EPComplex
@@ -41,30 +42,39 @@ class TestParsingNumeric(TestParsing):
         self.assertEqual(assume, result)
 
     # region Exceptions
-    # region Exceptions: EPParsingNumericFailedError
-    def test_int_parsing_failed_error(self):
+    # region Exceptions: EPParseToNumericFailedError
+    def test_parse_to_int_failed_error(self):
         # Action
         self.parser.add_arg(EPArgument('a', argument_type=int))
 
         # Assert
-        self.assertRaises(EPParsingNumericFailedError, self.parser.parse, 'x')
-        self.assertRaises(EPParsingIntFailedError, self.parser.parse, 'x')
+        self.assertRaises(EPException, self.parser.parse, 'x')
+        self.assertRaises(EPParsingFailedError, self.parser.parse, 'x')
+        self.assertRaises(EPParseToTypeFailedError, self.parser.parse, 'x')
+        self.assertRaises(EPParseToNumericFailedError, self.parser.parse, 'x')
+        self.assertRaises(EPParseToIntFailedError, self.parser.parse, 'x')
 
-    def test_float_parsing_failed_error(self):
+    def test_parse_to_float_failed_error(self):
         # Action
         self.parser.add_arg(EPArgument('a', argument_type=float))
 
         # Assert
-        self.assertRaises(EPParsingNumericFailedError, self.parser.parse, 'x')
-        self.assertRaises(EPParsingFloatFailedError, self.parser.parse, 'x')
+        self.assertRaises(EPException, self.parser.parse, 'x')
+        self.assertRaises(EPParsingFailedError, self.parser.parse, 'x')
+        self.assertRaises(EPParseToTypeFailedError, self.parser.parse, 'x')
+        self.assertRaises(EPParseToNumericFailedError, self.parser.parse, 'x')
+        self.assertRaises(EPParseToFloatFailedError, self.parser.parse, 'x')
 
-    def test_complex_parsing_failed_error(self):
+    def test_parse_to_complex_failed_error(self):
         # Action
         self.parser.add_arg(EPArgument('a', argument_type=complex))
 
         # Assert
-        self.assertRaises(EPParsingNumericFailedError, self.parser.parse, 'x')
-        self.assertRaises(EPParsingComplexFailedError, self.parser.parse, 'x')
+        self.assertRaises(EPException, self.parser.parse, 'x')
+        self.assertRaises(EPParsingFailedError, self.parser.parse, 'x')
+        self.assertRaises(EPParseToTypeFailedError, self.parser.parse, 'x')
+        self.assertRaises(EPParseToNumericFailedError, self.parser.parse, 'x')
+        self.assertRaises(EPParseToComplexFailedError, self.parser.parse, 'x')
     # endregion
 
     # region Exceptions: EPNumericOverBoundError

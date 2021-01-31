@@ -24,12 +24,15 @@ class EPMandatoryArgumentInvalidPositionError(EPParserSetupFailedError):
 
 # region EPParsingFailedError
 class EPParsingFailedError(EPException):
-    def __init__(self, value: str, to: Union[type, str], absolute: bool = False):
-        self.value = value
-        self.to = to.__name__ if not absolute else to
+    pass
+
+
+class EPMandatoryArgumentBlankError(EPParsingFailedError):
+    def __init__(self, name: str):
+        self.name = name
 
     def __str__(self) -> str:
-        return f'Could not parse {self.value} to {self.to}.'
+        return f"Argument named '{self.name}' is not filled."
 
 
 class EPParsingOperationFailedError(EPParsingFailedError):
@@ -40,81 +43,92 @@ class EPParsingOperationFailedError(EPParsingFailedError):
         return f'Could not perform operation on {self.value}.'
 
 
-class EPParsingStringFailedError(EPParsingFailedError):
+# region EPParsingFailedError -> EPParseToTypeFailedError
+class EPParseToTypeFailedError(EPParsingFailedError):
+    def __init__(self, value: str, to: Union[type, str], absolute: bool = False):
+        self.value = value
+        self.to = to.__name__ if not absolute else to
+
+    def __str__(self) -> str:
+        return f'Could not parse {self.value} to {self.to}.'
+
+
+class EPParseToStringFailedError(EPParseToTypeFailedError):
     def __init__(self, value: str):
         super().__init__(value, str)
 
 
-class EPParsingBoolFailedError(EPParsingFailedError):
+class EPParseToBoolFailedError(EPParseToTypeFailedError):
     def __init__(self, value: str):
         super().__init__(value, bool)
 
 
-class EPParsingUnionFailedError(EPParsingFailedError):
+class EPParseToUnionFailedError(EPParseToTypeFailedError):
     def __init__(self, value: str):
         super().__init__(value, 'union', True)
 
 
-# region EPParsingFailedError -> EPParsingNumericFailedError
-class EPParsingNumericFailedError(EPParsingFailedError):
+# region EPParsingFailedError -> EPParseToTypeFailedError -> EPParseToNumericFailedError
+class EPParseToNumericFailedError(EPParseToTypeFailedError):
     def __init__(self, value: str, to: type = None):
         absolute = False if to else True
         to = to if to else 'numeric'
         super().__init__(value, to, absolute)
 
 
-class EPParsingIntFailedError(EPParsingNumericFailedError):
+class EPParseToIntFailedError(EPParseToNumericFailedError):
     def __init__(self, value: str):
         super().__init__(value, int)
 
 
-class EPParsingFloatFailedError(EPParsingNumericFailedError):
+class EPParseToFloatFailedError(EPParseToNumericFailedError):
     def __init__(self, value: str):
         super().__init__(value, float)
 
 
-class EPParsingComplexFailedError(EPParsingNumericFailedError):
+class EPParseToComplexFailedError(EPParseToNumericFailedError):
     def __init__(self, value: str):
         super().__init__(value, complex)
 # endregion
 
 
-# region EPParsingFailedError -> EPParsingCollectionFailedError
-class EPParsingCollectionFailedError(EPParsingFailedError):
+# region EPParsingFailedError -> EPParseToTypeFailedError -> EPParseToCollectionFailedError
+class EPParseToCollectionFailedError(EPParseToTypeFailedError):
     def __init__(self, value: str, to: type = None):
         absolute = False if to else True
         to = to if to else 'collection'
         super().__init__(value, to, absolute)
 
 
-class EPParsingListFailedError(EPParsingCollectionFailedError):
+class EPParseToListFailedError(EPParseToCollectionFailedError):
     def __init__(self, value: str):
         super().__init__(value, list)
 
 
-class EPParsingSetFailedError(EPParsingCollectionFailedError):
+class EPParseToSetFailedError(EPParseToCollectionFailedError):
     def __init__(self, value: str):
         super().__init__(value, set)
 
 
-class EPParsingFrozenSetFailedError(EPParsingCollectionFailedError):
+class EPParseToFrozenSetFailedError(EPParseToCollectionFailedError):
     def __init__(self, value: str):
         super().__init__(value, frozenset)
 
 
-class EPParsingTupleFailedError(EPParsingCollectionFailedError):
+class EPParseToTupleFailedError(EPParseToCollectionFailedError):
     def __init__(self, value: str):
         super().__init__(value, tuple)
 
 
-class EPParsingDictFailedError(EPParsingCollectionFailedError):
+class EPParseToDictFailedError(EPParseToCollectionFailedError):
     def __init__(self, value: str):
         super().__init__(value, dict)
 
 
-class EPParsingRangeFailedError(EPParsingCollectionFailedError):
+class EPParseToRangeFailedError(EPParseToCollectionFailedError):
     def __init__(self, value: str):
         super().__init__(value, range)
+# endregion
 # endregion
 # endregion
 
